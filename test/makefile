@@ -7,3 +7,4 @@ json_mock: ${HOME}/test/json_mock.cc
 	${CXX} ${HOME}/test/json_mock.cc ${INCLUDES} -o ${HOME}/test/json_mock
 
 clean:
+	rm ${HOME}/test/json_mock

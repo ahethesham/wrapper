@@ -3,7 +3,7 @@
   "username": "pixel_fox",
   "active": true,
   "email": "pixel.fox@example.com",
-  "score": 92.7,
+  "score": 92,
   "roles": ["admin", "editor"],
   "profile": {
     "firstName": "Lena",
@@ -50,6 +50,5 @@
     "emailVerified": true,
     "twoFactorEnabled": false
   },
-  "nullField": null
 }
 
