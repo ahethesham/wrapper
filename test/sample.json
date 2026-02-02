@@ -1,0 +1,55 @@
+{
+  "id": 84721,
+  "username": "pixel_fox",
+  "active": true,
+  "email": "pixel.fox@example.com",
+  "score": 92.7,
+  "roles": ["admin", "editor"],
+  "profile": {
+    "firstName": "Lena",
+    "lastName": "Hart",
+    "age": 29,
+    "address": {
+      "street": "421 Maple Ave",
+      "city": "Brookview",
+      "zip": "90321",
+      "country": "US"
+    }
+  },
+  "preferences": {
+    "theme": "dark",
+    "notifications": {
+      "email": true,
+      "sms": false,
+      "push": true
+    },
+    "language": "en-US"
+  },
+  "lastLogin": "2026-01-29T18:42:11Z",
+  "tags": ["beta_user", "premium", "c++_tester"],
+  "stats": {
+    "posts": 134,
+    "followers": 982,
+    "following": 181
+  },
+  "projects": [
+    {
+      "id": "p-001",
+      "name": "Atlas",
+      "status": "active",
+      "contributors": 5
+    },
+    {
+      "id": "p-002",
+      "name": "Nova",
+      "status": "archived",
+      "contributors": 2
+    }
+  ],
+  "flags": {
+    "emailVerified": true,
+    "twoFactorEnabled": false
+  },
+  "nullField": null
+}
+

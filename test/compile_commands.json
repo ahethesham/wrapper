@@ -1,0 +1,9 @@
+[
+	{
+		"directory": "/home/ahethesham/agent/test",
+		"command": "g++ -std=c++11 -o json_mock.o -c json_mock.cc -I/home/ahethesham/agent/include/",
+		"file": "json_mock.cc"
+	},
+
+
+]
