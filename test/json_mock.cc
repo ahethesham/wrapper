@@ -16,7 +16,7 @@ int main(int argc , char **argv)
         json _json((const char *)input); 
         std::cout << "testing one " << (_json.operator[]<std::string>("lastLogin"))->get() << std::endl;
     }catch(std::exception &e){
-        printf("Fucked up  %s \n" , e.what());
+        printf("up  %s \n" , e.what());
     }
     return 0;
 }
