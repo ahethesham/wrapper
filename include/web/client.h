@@ -11,6 +11,7 @@
 
 class Client {
     public:
+        // should take the request argument and return a response object 
         virtual Response & send(Request &req) = 0; 
 };
 
@@ -66,9 +67,7 @@ Response & https::client::send(Request & req)
     http::headers *responseHeaders = new http::headers(*reader_);
     json * json = new ::json(*reader_);
     Response *resp = new http::response(*responseHeaders , *json);
-
     return *resp;
-
 }
 /*
  * There should only be one concrete implementation

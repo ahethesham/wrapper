@@ -14,9 +14,21 @@ int main(int argc , char **argv)
         input[idx++] = ch; 
     try{
         json _json((const char *)input); 
-        std::cout << "testing one " << (_json.operator[]<std::string>("lastLogin"))->get() << std::endl;
+        json _add;
+        auto _obj1 = _add.get();
+        _obj1.push("hello" , std::make_shared<jsonString>("world"));
+        _obj1.push("for number with spaces" , std::make_shared<jsonInteger>(12345));
+        jsonArray arr;
+        auto t = &_obj1;
+        std::shared_ptr<basic_json> t1(t);
+        arr.push(t1).push(t1).push(std::make_shared<jsonInteger>(123)).push(std::make_shared<jsonString>("done")).push(std::make_shared<jsonBoolean>(true));
+        jsonObject obj;
+        auto tarr = &arr;
+        std::shared_ptr<basic_json> t2(tarr);
+        obj.push("testing array" , t2);
+        std::cout << obj.serialize() << std::endl;
     }catch(std::exception &e){
-        printf("up  %s \n" , e.what());
+        printf("%s \n" , e.what());
     }
     return 0;
 }

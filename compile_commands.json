@@ -1,0 +1,21 @@
+[
+	{
+		"directory": "/home/ahethesham/agent/test",
+		"command": "g++ -std=c++11 -I/home/ahethesham/agent/include -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/web -o request_mock.o -c request_mock.cc",
+		"file": "request_mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/test",
+		"command": "g++ -std=c++11 -I/home/ahethesham/agent/include -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/web -o json_mock.o -c json_mock.cc",
+		"file": "json_mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent",
+		"command": "g++ -std=c++11 -I/home/ahethesham/agent/include -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/web -o main.o -c main.cc",
+		"file": "main.cc"
+	},
+
+
+]
