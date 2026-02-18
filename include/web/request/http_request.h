@@ -46,6 +46,15 @@ namespace http
                 return res;
             }
     };
+    class RequestLine : public Serializable{
+
+        public:
+            std::string & getUri();
+            std::string serialize() override{
+                std::string res = "";
+                return res;
+            }
+    };
     
     // will have a json as body type
     // pair<string , string> as the header
@@ -56,7 +65,7 @@ namespace http
             typedef json                                          body_type;
             typedef HttpHeaders                                   header_type;
             typedef QueryParameters                               query_param_type;
-            typedef std::string                                   request_line_type;
+            typedef RequestLine                                   request_line_type;
             typedef std::string                                   serialize_type;
             typedef HttpRequest                                   value_type;
             
@@ -87,7 +96,7 @@ namespace http
            // should take care of serializing itself into a string and returning the string 
            serialize_type serialize() {
                 serialize_type res = "";
-                res = requestLine_ + header_.serialize() + "\n\n" + body_.serialize();
+                res = requestLine_.serialize() + header_.serialize() + "\n\n" + body_.serialize();
                 return res;
            }
            header_type & header(){

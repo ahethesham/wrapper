@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include "address.h"
 
 
 template <typename socket_type>
@@ -17,10 +16,10 @@ class basic_socket{
 
     typedef socket_type value_type;
 
-    int fd_;
+    typename value_type::fd_type        fd_;
     
     public:
-        basic_socket(int port , std::string &address ) 
+        basic_socket( ) 
         {
             open();
         };
@@ -29,11 +28,11 @@ class basic_socket{
             /*
              * Open the socket based on the socket_type and stream type provided in the template 
              */
-            fd_ = ::socket(value_type::socket_type , value_type::stream_type , 0);
+            fd_ = ::socket( value_type::network_type  , value_type::communication_type  , value_type::protocol_type);
             assert(fd_ > 0);
             return ;
         }
-        int get(){
+        typename value_type::fd_type get(){
             return fd_;
         }
 };
