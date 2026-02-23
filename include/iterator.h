@@ -3,12 +3,17 @@
 
 template<typename T>
 class Iterator{
-    T * root_;
-    T * current_;
-    bool hasNext_;
+    typedef T data_type;
+    typedef typename T::value_type value_type;
+    value_type * root_;
+    value_type * current_;
     public:
-        virtual T & getNext() ; 
-        virtual bool hasNext() ;
+        virtual bool hasNext(){
+            return current_->hasNext();
+        }
+        virtual value_type * get(){
+            return current_;
+        }
 };
 
 #endif

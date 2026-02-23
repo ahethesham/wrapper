@@ -2,17 +2,23 @@
 #define __TCP_SOCKET_H__
 
 #include <sys/socket.h>
-#include "socket.h"
-class TcpSocket{
-    public:
-        typedef int fd_type;
-        static short network_type ;
-        static short communication_type;
-        static short protocol_type;
-};
-short TcpSocket::network_type = AF_INET;
-short TcpSocket::communication_type = SOCK_STREAM;
-short TcpSocket::protocol_type = 0;
+#include "web_fwd.h"
 
-typedef basic_socket<TcpSocket> tcp_socket;
+
+struct ipv4_network_domain{
+    static constexpr short value_type = AF_INET;
+    typedef struct sockaddr_in sockaddr_type;
+};
+
+struct tcp_communication_type{
+    static constexpr short value_type = SOCK_STREAM;
+};
+
+struct default_protocol_type{
+    static constexpr short value_type = 0;
+};
+
+typedef basic_socket<ipv4_network_domain ,
+                     tcp_communication_type ,
+                     default_protocol_type > tcp_socket;
 #endif

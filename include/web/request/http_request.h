@@ -1,15 +1,12 @@
 #ifndef __HTTP_REQUEST_H__
 #define __HTTP_REQUEST_H__
 
-#include "request.h"
-#include "json_fwd.h"
+#include "json.h"
 #include <string>
+#include "web_fwd.h"
+
 namespace http
 {
-    class HttpRequest;
-    class HttpResponse;
-
-    typedef basic_request<HttpRequest  > http_request;
 
     class HttpHeaders : public Serializable{
         std::vector<std::pair<std::string , std::string > > container_;
@@ -48,17 +45,20 @@ namespace http
     };
     class RequestLine : public Serializable{
 
+        private:
+            std::string line_;
         public:
             std::string & getUri();
             std::string serialize() override{
-                std::string res = "";
-                return res;
+                return line_;
+            }
+            RequestLine & operator=(std::string & s){
+                line_ = s;
+                log("request line added %s" , s.c_str());
+                return *this;
             }
     };
     
-    // will have a json as body type
-    // pair<string , string> as the header
-    // std:;string as request  line
     class HttpRequest : public Serializable{
 
         public:
@@ -85,13 +85,17 @@ namespace http
                 queryParams_[key] = value;
                 return ;
            }
-           void addHeader(std::string & key , std::string  & value){
+           void addHeader(std::string && key , std::string  && value){
                 header_[key] = value;
                 return ;
            }
            void addBody( const char *  input){
                 body_.create(input);
                 return ;
+           }
+           void addRequestLine(std::string  line){
+               requestLine_ = line;
+               return ;
            }
            // should take care of serializing itself into a string and returning the string 
            serialize_type serialize() {
@@ -111,6 +115,7 @@ namespace http
                 return requestLine_;
            }
     };
+
 }
 
 #endif

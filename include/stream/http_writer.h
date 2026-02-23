@@ -1,6 +1,7 @@
 #ifndef __HTTP_WRITER_H__
 #define __HTTP_WRITER_H__
 
+#include "web_fwd.h"
 #include <cstddef>
 #include <cstring>
 #include <unistd.h>
@@ -8,6 +9,8 @@ class http_writer{
     int fd_;
     public:
         typedef size_t size_type;
+        typedef http::http_response & custom_protocol;
+
         http_writer(int fd) : fd_(fd) {}
 
         size_t write(const char * payload){
@@ -30,6 +33,11 @@ class http_writer{
 
             return bufferIdx;
         }
+
+        size_type write(custom_protocol res){
+            return this->write(res.serialize().c_str());
+        } 
+
 };
 
 #endif

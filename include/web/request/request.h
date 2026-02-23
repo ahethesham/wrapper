@@ -10,11 +10,9 @@
  * Parser could be http parser , json parser , ftp parser 
  * Allocator could be a dynamic memory management service
  */
-static struct Dummy{};
-
 template<typename Protocol ,
-         typename Parser = Dummy,
-         typename Allocator = Dummy>
+         typename Parser ,
+         typename Allocator >
 class basic_request : public Serializable
 {
     typedef typename Protocol::value_type        value_type;
@@ -63,6 +61,5 @@ class basic_request : public Serializable
             return protocol_->requestLine();
         }
 };
-#include "http_request.h"
 
 #endif

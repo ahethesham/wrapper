@@ -1,1 +1,4 @@
 env/
+.cache/
+.buildFileTree.sh
+.compile_commands.json

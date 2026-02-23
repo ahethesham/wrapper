@@ -3,12 +3,11 @@
 #define __RESPONSE_H__
 #include <unistd.h>
 #include "json_fwd.h"
-#include "json.h"
+//#include "web_fwd.h"
 
-struct  dummy_response{};
 template< typename Protocol ,
-          typename Parser = dummy_response ,
-          typename Allocator = dummy_response>
+          typename Parser  ,
+          typename Allocator >
 class basic_response : public Serializable{
     
     typedef typename Protocol::value_type           value_type;
@@ -23,7 +22,8 @@ class basic_response : public Serializable{
     public:
     basic_response(value_type  res) : protocol_(std::move(res)) {}
     basic_response(std::string & input) : protocol_(*new value_type(input)) {}
-    basic_response(){}
+    basic_response() : protocol_(*new value_type()){}
+
     template<typename ... Args>
         basic_response & addBody(Args ... args){
             protocol_.addBody(std::forward<Args>(args)...);

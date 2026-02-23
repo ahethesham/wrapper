@@ -1,13 +1,12 @@
 #ifndef __HTTP_READER_H__
 #define __HTTP_READER_H__
 
-#include "stream.h"
 #include <cstring>
-#include "http_request.h"
 #include <unistd.h>
+#include "web_fwd.h"
 
 
-class http_reader{
+class http_reader {
     typedef enum {
         json ,
         unknown
@@ -31,6 +30,7 @@ class http_reader{
 
     public:
         typedef size_t size_type;
+        typedef http::http_request & custom_protocol;
         
         http_reader(int fd ) : fd_(fd) {
             ::memset(buffer_ , 0 , 1024 * 1024 );
@@ -40,7 +40,7 @@ class http_reader{
             req  =  new http::http_request();
         }
 
-        size_type read(){
+        custom_protocol  read(){
             int rc;
             size_type bufferIdx = 0;
             size_type totalBytesRead = 0;
@@ -50,12 +50,16 @@ class http_reader{
 
             do{
                 rc = ::read(fd_ , (void *)(buffer_ + bufferIdx) , remainingBytes);
+                log("read %d bytes" , rc);
                 if(rc > 0){
                     bufferIdx += rc;    
-                    process(previousIdx , bufferIdx);
+                //    process(previousIdx , bufferIdx);
                     remainingBytes -= rc;
+                    log("Read \n %s" , buffer_);
                 }
             }while(remainingBytes > 0 &&  (rc > 0 || (rc < 0 && errno == EINTR)));
+
+            return *req;
         }
         void reset(){
             ::memset(buffer_ , 0 , 1024 * 1024 );
@@ -77,10 +81,15 @@ class http_reader{
                switch(currentParsingStatus_){ 
                    case headers:
                             while(previousIdx < currentIdx &&
+                                   ( buffer_[previousIdx] == '\r' || 
+                                     buffer_[previousIdx] == '\n'))previousIdx++;
+                            while(previousIdx < currentIdx &&
                                   buffer_[previousIdx] != '\r'){
                                 // TODO : add logic to check for invalid characters
                                 previousIdx ++;
                             }
+                            lineStartIdx_ = previousIdx;
+                            while(lineStartIdx_ < currentIdx && buffer_[lineStartIdx_] == '\r' || buffer_[lineStartIdx_] == '\n')lineStartIdx_++;
                             if(previousIdx < currentIdx){
                                 lineEndingIdx_ = previousIdx;
                                 processHeaders();
@@ -103,7 +112,7 @@ class http_reader{
             std::string key = "";
             std::string value = "";
 
-            assert(lineEndingIdx_ > lineStartIdx_);
+            //assert(lineEndingIdx_ > lineStartIdx_);
             do{
                 if(buffer_[lineStartIdx_] == ' ')continue;
                 if(buffer_[lineStartIdx_] != '\"')throw std::runtime_error("unexpected key value pair");
@@ -112,7 +121,10 @@ class http_reader{
                 }
                 if(lineStartIdx_ == lineEndingIdx_  )throw std::runtime_error("unexpected key value pair");
                 assert(buffer_[lineStartIdx_] == ':' && (lineStartIdx_ + 1 ) != lineEndingIdx_ && buffer_[lineStartIdx_ + 1] == ' ');
-
+                
+                lineStartIdx_ += 2;
+                // remove the value
+                
             }while(0);
             req->addHeader(key , value);
             if(key == "Content-Type"){
@@ -126,6 +138,7 @@ class http_reader{
         }
         void processRequestLine(size_type & previousIdx , size_type & currentIdx){
             // forward the string as is to the req
+            log("process %s start " , __func__);
             static std::string line = "";
             static bool foundEnd = false;
             do{
@@ -138,6 +151,7 @@ class http_reader{
                 line = "";
                 foundEnd = false;
             }
+            log("process %s end " , __func__);
             return ;
         }
         void processBody(size_type & previousIdx , size_type & currentIdx){

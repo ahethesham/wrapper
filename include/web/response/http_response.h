@@ -2,10 +2,9 @@
 #define __HTTP_RESPONSE_H__
 #include "json_fwd.h"
 #include "http_request.h"
-#include "response.h"
+
+
 namespace http{
-    class HttpResponse;
-    typedef basic_response<HttpResponse> http_response;
 
     class HttpResponse : public Serializable{
         public:

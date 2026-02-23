@@ -4,30 +4,29 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/socket.h>
+#include "logger.h"
 
 template <typename socket>
-class acceptor{
-    typedef typename socket::socket_type socket_type;
-      
-    socket_type *socketFd_;
-    socket * socket_;
+class basic_acceptor{
+    public:
+        typedef  socket socket_type;
+        typedef  typename socket::sockaddr_type sockaddr_type;
+    private:  
+        int  socketFd_;
+        socket * socket_;
 
     public:
-        acceptor(socket * psocket) : socket_(psocket)  {socketFd_(*psocket->get());}
+        basic_acceptor(socket * psocket) : socket_(psocket) , socketFd_(psocket->get()) { }
         socket_type accept(){
-            struct sockaddr clientaddr;
-            memset(&clientaddr , 0 ,sizeof(sockaddr) );
+            sockaddr_type * clientaddr = new sockaddr_type();
+            memset(clientaddr , 0 ,sizeof(sockaddr) );
             socklen_t len = 0;
-            socket_type newClient = ::accept(*socketFd_ , &clientaddr , &len);
-
-            return newClient;
+            log("Ready to accept requests");
+            int newClient = ::accept(socketFd_ , (struct sockaddr *)clientaddr , &len);
+            log("accepted new client");
+            return socket_type(newClient , clientaddr);
         }
-
-     
-
-
 };
-
 
 #endif
 

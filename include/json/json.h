@@ -15,7 +15,6 @@ class json : public basic_json{
     char * input_;
     jsonObject * root_;
     public:
-       json(Stream &stream);
        json(std::string &input);
        json() : root_(new jsonObject()){}
        json(const char *input){

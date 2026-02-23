@@ -1,9 +1,8 @@
-#include "http_request.h"
-#include "http_response.h"
-#include "server.h"
-#include "tcp_socket.h"
-#include <functional>
+#ifndef __HTTP_SERVER_H__
+#define __HTTP_SERVER_H__
 
+#include <functional>
+#include "web_fwd.h"
 
 /*
  * This will be the base  server 
@@ -40,11 +39,5 @@ class HttpServer{
         }
 };
 
-typedef basic_server< tcp_socket,
-                      http_endpoint ,
-                      http_listener ,
-                      http_acceptor ,
-                      http_stream ,
-                      http::http_request
-                      http::http_response
-                        > http_server; 
+
+#endif
