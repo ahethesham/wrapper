@@ -1,107 +1,73 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
-#include <unistd.h>
-#include "json.h"
-#include "request.h"
-#include "socket.h"
-#include "response.h"
-#include "address.h"
-#include <openssl/ssl.h>
-
-class Client {
-    public:
-        // should take the request argument and return a response object 
-        virtual Response & send(Request &req) = 0; 
-};
-
-namespace http{
-    class client : public Client
-    {
-        Stream * reader_;
-        Stream * writer_;
-        Socket * socket_;
-        public:
-            // connect to this host on the given socket 
-            client(const char * hostname , int port);
-            Response & send(Request & req);
-            int getFd(){return socket_->getFd();}
-    };
-}
-namespace https{
-    class client : public http::client{
-
-        SSL_CTX *context_;
-        SSL * ssl_;
-        SSL_METHOD *method_;
-        Stream *reader_;
-        Stream *writer_;
-        public:
-            client(const char * hostname , int port) : http::client(hostname , port){
-                // it will have to take care of making this a https connnection
-                // add assert and logs wherever necessary
-                SSL_load_error_strings();
-                OpenSSL_add_ssl_algorithms();
-                method_ = (SSL_METHOD *)TLS_client_method();
-                context_ = SSL_CTX_new(method_);
-                ssl_ = SSL_new(context_);
-                SSL_set_fd(ssl_ , getFd());
-                SSL_connect(ssl_);
-            }
-            ~client(){
-                // close and cleanup all the ssl contexts 
-            }
-            Response & send(Request & req) override;
-    };
-}
-
-Response & https::client::send(Request & req)
-{
-    reader_ = new https::stream();
-    writer_ = new https::stream();
-    // read all the headers and json body into the writer stream
-    req >> *writer_;
-    (*writer_) >> ((void *)ssl_);
-    (*reader_) << ((void *)ssl_);
-    // extract the headers and jsonbody from the response 
-    http::headers *responseHeaders = new http::headers(*reader_);
-    json * json = new ::json(*reader_);
-    Response *resp = new http::response(*responseHeaders , *json);
-    return *resp;
-}
 /*
- * There should only be one concrete implementation
+ * Whenever a process wants to interactr with the external client it has to go through this basic_client generic interface 
  */
-http::client::client(const char * hostname , int port)
-{
-    // no socket options neede for now 
-    Socket * tcpSocket = new tcp::socket(0);
-    Address * ipv4Address = new ipv4::address(hostname , port);
-    // bind the socket to this address 
-    tcpSocket->bind(*ipv4Address);
-    // connect with the remote client ...for now lets have it blocking
-    tcpSocket->connect();
 
-    return ;
-}
+#include "logger.h"
+#include <exception>
+#include <string>
+template < typename socketPolicy ,
+           typename endpointPolicy ,
+           typename connectPolicy ,
+           typename streamPolicy  ,
+           typename requestPolicy ,
+           typename responsePolicy ,
+           typename clientBase >
+class basic_client : public clientBase {
+    typedef socketPolicy    socket_type;
+    typedef endpointPolicy  endpoint_type;
+    typedef streamPolicy    stream_type;
+    typedef requestPolicy   request_type;
+    typedef responsePolicy  response_type;
+    typedef connectPolicy   connect_type;
 
-Response & http::client::send(Request & req){
-    // send the request to the client and then read the response and create a response object  for it
-    Stream &_stream = *(new lineStream());
-    // should write the entire request into this stream 
-    req >> (_stream);
-    _stream >> (socket_->getFd()) ;
-    Stream & responseStream = *(new lineStream());
-    
-    responseStream << (socket_->getFd());
-    // have an iterator here and then parse the response line by line and seperate each header and body
-    Stream::iterator itr ;
-    headers *resHeaders = new headers();
-    body *   resBody = new body();
-    while(itr.hasNext()){
-        // have logic to get the stream line by line and then seperate headers and body
-    }
-    return *new response(*resHeaders  , *resBody);
-}
+    socket_type     * socket_;
+    endpoint_type   * endpoint_;
+    stream_type     * stream_;
+    connect_type    * connector_;
+
+    public:
+        basic_client(endpoint_type  endpoint) {
+            try{
+                socket_ = new socket_type();
+                connector_ = new connect_type(*socket_ , endpoint);
+                stream_ = new stream_type(socket_->get());
+            }catch(std::exception & e){
+                log("Failed to connect with the client %s" , e.what());
+            }
+            return ;
+        }
+        basic_client(int port , const char * host){
+            try{
+                endpoint_ = new endpoint_type(port , std::string(host));
+                socket_ = new socket_type();
+                connector_ = new connect_type(*socket_ , *endpoint_);
+                log("initializing stream ");
+                stream_ = new stream_type(socket_->get());
+                log("Done with setup");
+            }catch(std::exception & e){
+                log("failed to connect with the client ");
+            }
+        }
+
+        response_type  send(request_type & req){
+            assert(stream_ != nullptr);
+            log("writing request");
+            stream_->write(req);
+            return stream_->read();
+        }
+
+        basic_client & close(){
+            socket_->close();
+            return *this;
+        }
+        virtual ~basic_client(){
+            delete socket_;
+            delete stream_;
+            delete connector_;
+        }
+};
 
 #endif

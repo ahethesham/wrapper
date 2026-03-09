@@ -30,4 +30,9 @@ std::string jsonString::serialize(){
     return std::string('\"' + value_ + '\"');
 }
 
+jsonString & jsonString::clear(){
+    value_ = "";
+    return *this;
+}
+
 #endif

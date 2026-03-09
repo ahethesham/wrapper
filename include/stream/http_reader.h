@@ -2,42 +2,73 @@
 #define __HTTP_READER_H__
 
 #include <cstring>
+#include <string.h>
 #include <unistd.h>
+#include "buffer.h"
 #include "web_fwd.h"
+#include "http_request.h"
+#include "logger.h"
+
+inline ssize_t std_reader(int fd , void * buffer , ssize_t size){
+        return ::read(fd , buffer , size);
+}
+inline ssize_t ssl_reader(SSL * fd , void * buffer , ssize_t size){
+        return ::SSL_read(fd , buffer , size);
+}
+
+#if 0
+namespace {
+#define requestLine 0
+#define headers     1
+#define body        2
+#define completed   3
+
+class parsing_status{
+    public:
+    private:
+        short currentParsingStatus_;
+    public:
+        void setStatus(short status = requestLine){
+            currentParsingStatus_ = requestLine;
+        }
+        parsing_status(int status = requestLine) : currentParsingStatus_(status){}
+        short getStatus(){
+            return currentParsingStatus_;
+        }
+};
+}
 
 
+template <typename custom_http_protocol , // could be parsed as request for servers and response from clients
+          typename fd_type ,
+          auto reader >
 class http_reader {
     typedef enum {
         json ,
         unknown
     }contentType;
 
-    typedef enum{
-        requestLine ,
-        headers ,
-        body
-    }currentParsingStatus;
 
-    int  fd_;
+    fd_type  fd_;
     char buffer_[1024*1024];
-    http::http_request * req;
+    custom_http_protocol * req;
     int lineStartIdx_;
     int lineEndingIdx_;
     contentType type_;
-    currentParsingStatus currentParsingStatus_;
     int  contentLength_;
-    int currentStatus_;
+
+    parsing_status status_;
 
     public:
         typedef size_t size_type;
-        typedef http::http_request & custom_protocol;
+        typedef custom_http_protocol custom_protocol;
         
-        http_reader(int fd ) : fd_(fd) {
+        http_reader(fd_type fd ) : fd_(fd) {
             ::memset(buffer_ , 0 , 1024 * 1024 );
             type_ = contentType::unknown;
-            currentParsingStatus_ = currentParsingStatus::requestLine;
             lineStartIdx_ = lineEndingIdx_ =  0;
-            req  =  new http::http_request();
+            contentLength_ = 0;
+            req  =  new custom_http_protocol();
         }
 
         custom_protocol  read(){
@@ -49,109 +80,138 @@ class http_reader {
             size_type previousIdx = 0;
 
             do{
-                rc = ::read(fd_ , (void *)(buffer_ + bufferIdx) , remainingBytes);
-                log("read %d bytes" , rc);
+                rc = reader(fd_ , (void *)(buffer_ + bufferIdx) , remainingBytes);
                 if(rc > 0){
                     bufferIdx += rc;    
-                //    process(previousIdx , bufferIdx);
+                    try{
+                        process(previousIdx , bufferIdx);
+                    }catch(std::exception &e){
+                        log("What has happened %s " , e.what());
+                        exit(1);
+                    }
                     remainingBytes -= rc;
-                    log("Read \n %s" , buffer_);
+                    if(status_.getStatus() == completed)break;
                 }
             }while(remainingBytes > 0 &&  (rc > 0 || (rc < 0 && errno == EINTR)));
-
+            log("completed reading request");
             return *req;
         }
         void reset(){
             ::memset(buffer_ , 0 , 1024 * 1024 );
             type_ = contentType::unknown;
-            currentParsingStatus_ = currentParsingStatus::requestLine;
+            status_.setStatus(requestLine) ;
             lineStartIdx_ = lineEndingIdx_ =  0;
             if(req)delete req;
-            req  =  new http::http_request();
+            req  =  new custom_http_protocol();
         }
 
     private:
         void process(size_type & previousIdx , size_type & currentIdx){
 
-            if(previousIdx > 0 && buffer_[previousIdx - 1] == '\r' &&
-                    buffer_[previousIdx] != '\n')
-                throw std::runtime_error("unexpected json");
-
             do{
-               switch(currentParsingStatus_){ 
+               switch(status_.getStatus()){ 
                    case headers:
-                            while(previousIdx < currentIdx &&
-                                   ( buffer_[previousIdx] == '\r' || 
-                                     buffer_[previousIdx] == '\n'))previousIdx++;
-                            while(previousIdx < currentIdx &&
-                                  buffer_[previousIdx] != '\r'){
-                                // TODO : add logic to check for invalid characters
-                                previousIdx ++;
-                            }
-                            lineStartIdx_ = previousIdx;
-                            while(lineStartIdx_ < currentIdx && buffer_[lineStartIdx_] == '\r' || buffer_[lineStartIdx_] == '\n')lineStartIdx_++;
-                            if(previousIdx < currentIdx){
-                                lineEndingIdx_ = previousIdx;
-                                processHeaders();
-                            }
+                            processHeaders(previousIdx , currentIdx);
                         break;
                    case body:
                         if(currentIdx - previousIdx >= contentLength_){
                             // generate request body
                             processBody(previousIdx , currentIdx);
+                            status_.setStatus(completed);
+                            return ;
+                        }else{
+                            log("Body not fully received yet reading more \n");
                         }
-                        return ;
+                        break ;
                    case requestLine:
                             processRequestLine(previousIdx , currentIdx);
+                            break;
+                   case completed:
                         break;
-
                }
             }while(previousIdx < currentIdx);
-        }
-        void processHeaders() {
-            std::string key = "";
-            std::string value = "";
-
-            //assert(lineEndingIdx_ > lineStartIdx_);
-            do{
-                if(buffer_[lineStartIdx_] == ' ')continue;
-                if(buffer_[lineStartIdx_] != '\"')throw std::runtime_error("unexpected key value pair");
-                while(++lineStartIdx_ < lineEndingIdx_ && buffer_[lineStartIdx_] != '\"'){
-                    key += buffer_[lineStartIdx_];
-                }
-                if(lineStartIdx_ == lineEndingIdx_  )throw std::runtime_error("unexpected key value pair");
-                assert(buffer_[lineStartIdx_] == ':' && (lineStartIdx_ + 1 ) != lineEndingIdx_ && buffer_[lineStartIdx_ + 1] == ' ');
-                
-                lineStartIdx_ += 2;
-                // remove the value
-                
-            }while(0);
-            req->addHeader(key , value);
-            if(key == "Content-Type"){
-                if(value != "application/json")throw std::runtime_error("unexpected application format ");
-                type_ = contentType::json;
-
-            }else if(key == "Content-Length"){
-                contentLength_ = std::atoi(value.c_str());
+            if(status_.getStatus() == body && contentLength_ == 0){
+                // no json body only the headers 
+                status_.setStatus( completed);
             }
+        }
+        void processHeaders(size_type & previousIdx , size_type & currentIdx) {
+
+            static std::string key = "";
+            static std::string value = "";
+            static int currentKeyValueStatus = 0;
+
+            if(currentIdx - previousIdx >= 2 && strncmp((buffer_ + previousIdx) , "\r\n" , 2) == 0 ){
+                log("Setting the status to read body ");
+                status_.setStatus(body);
+                previousIdx += 2;
+                return ;
+            }
+
+            do{
+                if(currentKeyValueStatus == 0 || currentKeyValueStatus == 1){
+                    while(previousIdx < currentIdx && buffer_[previousIdx] != ':'){
+                        key += buffer_[previousIdx++];
+                    }
+                    if(previousIdx == currentIdx){
+                        currentKeyValueStatus = 1;
+                        break;
+                    }else{
+                        // extract the value;
+                        currentKeyValueStatus = 2;
+                        if( previousIdx + 1 < currentIdx)
+                            assert(buffer_[++previousIdx] == ' ');
+                        else
+                            break;
+                    }
+                }if(currentKeyValueStatus == 2 && previousIdx < currentIdx){
+                    currentKeyValueStatus = 3;
+                }if(currentKeyValueStatus == 3){
+                    while(++previousIdx < currentIdx && buffer_[previousIdx] != '\r')
+                        value += buffer_[previousIdx];
+                    if(previousIdx < currentIdx){
+                        req->addHeader(key , value);
+                        if(key == "Content-Type"){
+                            if(value != "application/json")throw std::runtime_error("unexpected application format ");
+                            type_ = contentType::json;
+                        }else if(key == "Content-Length"){
+                            contentLength_ = std::atoi(value.c_str());
+                        }
+                        key = value = "";
+                        currentKeyValueStatus = 4;
+                    }
+                }if(currentKeyValueStatus == 4){
+                    // continue untill we reach the end of the line
+                    while(previousIdx < currentIdx && buffer_[previousIdx++] != '\r');
+                    if(previousIdx > 0 && buffer_[previousIdx - 1] == '\r'){
+                        if(previousIdx < currentIdx ){
+                            assert(buffer_[previousIdx++] == '\n');
+                            currentKeyValueStatus = 0;
+                        }
+                    }
+                }
+            }while(0);
             return ;
         }
         void processRequestLine(size_type & previousIdx , size_type & currentIdx){
             // forward the string as is to the req
-            log("process %s start " , __func__);
             static std::string line = "";
             static bool foundEnd = false;
             do{
                 line += buffer_[previousIdx++];
             }while(previousIdx < currentIdx  && buffer_[previousIdx] != '\r');
-            if(buffer_[previousIdx] == '\r')foundEnd = true;
+            if(buffer_[previousIdx] == '\r'){
+                if(previousIdx + 1 < currentIdx)
+                    assert(buffer_[++previousIdx] == '\n');
+                previousIdx++;
+                foundEnd = true;
+            }
             if(foundEnd){
-                req->addRequestLine(line);
-                currentParsingStatus_ = currentParsingStatus::headers;
+                req->addStatusLine(line);
+                status_.setStatus(headers);
                 line = "";
                 foundEnd = false;
             }
-            log("process %s end " , __func__);
             return ;
         }
         void processBody(size_type & previousIdx , size_type & currentIdx){
@@ -162,4 +222,31 @@ class http_reader {
     
 };
 
+
+#else
+
+template < typename socket_policy = tcp_ssl_socket , 
+           typename buffer_policy = buffer_v1  ,
+           auto reader = ssl_reader>
+class basic_http_reader{
+    public:
+        using buffer_type = buffer_policy;
+        using socket_type = socket_policy;
+
+        buffer_type * buffer_;
+        socket_type::fd_type fd_;
+        basic_http_reader(socket_type::fd_type fd) : fd_(fd) {}
+        buffer_type * read(){
+            int rc = reader(fd_ , (buffer_->data + buffer_->tail) , 64 * 1024);
+            if(rc > 0){
+                buffer_->tail += rc;
+            }
+            return buffer_;
+        }
+
+};
+
+using http_1_0_reader = basic_http_reader<tcp_socket , buffer_v1 , std_reader>;
+using https_1_0_reader = basic_http_reader<tcp_ssl_socket , buffer_v1 , ssl_reader>;
+#endif
 #endif

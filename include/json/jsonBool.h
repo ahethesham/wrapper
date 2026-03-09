@@ -9,6 +9,7 @@ jsonBoolean::jsonBoolean(Tokenizer &tokenizer , token *current) : value_(*new bo
    value_ = (current->value_ == "true" ) ? true : false;
 }
 bool & jsonBoolean::operator=(bool &val)  {
+    value_ = val;
     return value_;
 }
 bool & jsonBoolean::get() {
@@ -17,5 +18,9 @@ bool & jsonBoolean::get() {
 std::string jsonBoolean::serialize(){
     if(value_)return "true";
     return "false";
+}
+jsonBoolean & jsonBoolean::clear(){
+    value_ = false;
+    return *this;
 }
 #endif

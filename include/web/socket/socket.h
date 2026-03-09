@@ -16,37 +16,38 @@
  *  the base operations will always be  these                                                                           *
  *  ********************************************************************************************************************/
 
-template <typename network_type , 
-          typename communication_type , 
-          typename protocol_type >
-class basic_socket {
+template <typename creational_policy > // should have implementation for opening and closing the  
+class basic_socket : public creational_policy{
 
 
     public:
-        typedef network_type::sockaddr_type     sockaddr_type;
+        typedef creational_policy::sockaddr_type     sockaddr_type;
+        typedef creational_policy::fd_type       fd_type ;
+        using creational_policy::network;
     private:
-        int fd_;
-        sockaddr_type * sockaddr_;
+        //creational_policy * socket_creator_;
     public:
 
-        basic_socket( sockaddr_type * pClientAddress = nullptr) : sockaddr_(pClientAddress) 
+        basic_socket( )  : creational_policy()
         {
-            open();
         };
 
-        basic_socket(int fd , sockaddr_type * pClientAddress = nullptr)  : fd_(fd) , sockaddr_(pClientAddress) {}
+        basic_socket(fd_type fd )  : creational_policy(fd) {}
 
+        basic_socket(fd_type fd , sockaddr_type addr) : creational_policy(fd) {}
+#if 0
         void open(){
-            fd_ = ::socket(network_type::value_type , communication_type::value_type  , protocol_type::value_type);
+            fd_ = ::socket(network , communication_type::value_type  , protocol_type::value_type);
             assert(fd_ > 0);
             return ;
         }
+#endif
         void close(){
-            fd_ = ::close(fd_);
+            creational_policy::close();
             return ;
         }
-        int & get(){
-            return fd_;
+        fd_type get(){
+            return creational_policy::get();
         }
         virtual ~basic_socket(){
             close();

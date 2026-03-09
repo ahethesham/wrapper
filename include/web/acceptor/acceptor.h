@@ -24,7 +24,7 @@ class basic_acceptor{
             log("Ready to accept requests");
             int newClient = ::accept(socketFd_ , (struct sockaddr *)clientaddr , &len);
             log("accepted new client");
-            return socket_type(newClient , clientaddr);
+            return socket_type(newClient , *clientaddr);
         }
 };
 

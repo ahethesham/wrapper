@@ -27,6 +27,8 @@ class basic_endpoint {
         }
         basic_endpoint(sockaddr_type * clientAddress) : remoteHostAddress_(clientAddress) {}
 
+        basic_endpoint(){}
+
         bool resolve(){
             struct addrinfo hint;
             memset(&hint , 0x00 , sizeof(hint));
@@ -52,8 +54,8 @@ class basic_endpoint {
                     current_ = (struct addrinfo *)current_->ai_next;
                     return *this;
                 }
-                struct addrinfo & operator->(){
-                    return *current_;
+                struct addrinfo * operator->(){
+                    return current_;
                 }
                 struct addrinfo * getNext(){
                     auto temp = current_;

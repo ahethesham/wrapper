@@ -18,4 +18,9 @@ std::string jsonInteger::serialize(){
     return std::to_string(value_);
 }
 
+jsonInteger & jsonInteger::clear(){
+    value_ = 0;
+    return *this;
+}
+
 #endif

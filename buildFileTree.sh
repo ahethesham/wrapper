@@ -11,7 +11,9 @@ fi
 
 # get all the include files first
 ALL_INCLUDES="$(find ${HOME_DIR} -type f -name "*.h" 2>/dev/null)"
-ALL_INCLUDES="$ALL_INCLUDES `find $HOME_DIR -type f -name "*.hpp" 2>/dev/null`"
+ALL_INCLUDES="$ALL_INCLUDES $(find "/opt/homebrew/include/openssl/" -type f -name "*.h" 2>/dev/null)"
+
+echo $(find "/opt/homebrew/include/" -type f -name "*.h")
 
 INCLUDES=""
 DUPLICATES=""

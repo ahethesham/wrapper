@@ -1,0 +1,53 @@
+c++ -std=c++23 -L/opt/homebrew/lib -lssl -lcrypto /Users/ahethesham/Desktop/wrapper/test/server.cc -I/Users/ahethesham/Desktop/wrapper/include/ -I/Users/ahethesham/Desktop/wrapper/include/Logger/ -I/Users/ahethesham/Desktop/wrapper/include/json/ -I/Users/ahethesham/Desktop/wrapper/include/stream/ -I/Users/ahethesham/Desktop/wrapper/include/web/ -I/Users/ahethesham/Desktop/wrapper/include/web/acceptor/ -I/Users/ahethesham/Desktop/wrapper/include/web/binder/ -I/Users/ahethesham/Desktop/wrapper/include/web/client/ -I/Users/ahethesham/Desktop/wrapper/include/web/connector/ -I/Users/ahethesham/Desktop/wrapper/include/web/endpoint/ -I/Users/ahethesham/Desktop/wrapper/include/web/listener/ -I/Users/ahethesham/Desktop/wrapper/include/web/request/ -I/Users/ahethesham/Desktop/wrapper/include/web/response/ -I/Users/ahethesham/Desktop/wrapper/include/web/server/ -I/Users/ahethesham/Desktop/wrapper/include/web/socket/ -I/Users/ahethesham/Desktop/wrapper/web/ -I/opt/homebrew/include/ -o server
+In file included from /Users/ahethesham/Desktop/wrapper/test/server.cc:1:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web.h:5:
+/Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:6:1: warning: 'extern' is not permitted on a declaration of a type [-Wmissing-declarations]
+    6 | extern struct Dummy;
+      | ^
+In file included from /Users/ahethesham/Desktop/wrapper/test/server.cc:1:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web.h:5:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:127:
+In file included from /Users/ahethesham/Desktop/wrapper/include/stream/http_reader.h:7:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:128:
+In file included from /Users/ahethesham/Desktop/wrapper/include/stream/http_writer.h:4:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:129:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/server/http_server.h:5:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:130:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/response/http_response.h:4:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/request/http_request.h:6:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:131:
+/Users/ahethesham/Desktop/wrapper/include/web/request/request.h:16:23: warning: direct base 'Serializable' is inaccessible due to ambiguity:
+    class basic_request<class http::HttpRequest> -> Serializable
+    class basic_request<class http::HttpRequest> -> class http::HttpRequest -> Serializable [-Winaccessible-base]
+   16 | class basic_request : public Serializable ,
+      |                       ^~~~~~~~~~~~~~~~~~~
+/Users/ahethesham/Desktop/wrapper/include/web/server/http_server.h:32:23: note: in instantiation of template class 'basic_request<http::HttpRequest>' requested here
+   32 |                    req.requestLine().getType() == (*itr)->type_){
+      |                       ^
+In file included from /Users/ahethesham/Desktop/wrapper/test/server.cc:1:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web.h:5:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:127:
+In file included from /Users/ahethesham/Desktop/wrapper/include/stream/http_reader.h:7:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:128:
+In file included from /Users/ahethesham/Desktop/wrapper/include/stream/http_writer.h:4:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/web_fwd.h:129:
+In file included from /Users/ahethesham/Desktop/wrapper/include/web/server/http_server.h:4:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/functional:526:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/boyer_moore_searcher.h:22:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:33:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/unique_ptr.h:66:5: warning: delete called on 'basic_json' that is abstract but has non-virtual destructor [-Wdelete-abstract-non-virtual-dtor]
+   66 |     delete __ptr;
+      |     ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/unique_ptr.h:266:7: note: in instantiation of member function 'std::default_delete<basic_json>::operator()' requested here
+  266 |       __ptr_.second()(__tmp);
+      |       ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/unique_ptr.h:236:71: note: in instantiation of member function 'std::unique_ptr<basic_json>::reset' requested here
+  236 |   _LIBCPP_HIDE_FROM_ABI _LIBCPP_CONSTEXPR_SINCE_CXX23 ~unique_ptr() { reset(); }
+      |                                                                       ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:443:21: note: in instantiation of member function 'std::unique_ptr<basic_json>::~unique_ptr' requested here
+  443 |     unique_ptr<_Yp> __hold(__p);
+      |                     ^
+/Users/ahethesham/Desktop/wrapper/include/json/jsonObject.h:132:23: note: in instantiation of function template specialization 'std::shared_ptr<basic_json>::shared_ptr<basic_json, void>' requested here
+  132 |     value_.add( key , std::shared_ptr<basic_json>(&val));
+      |                       ^
+3 warnings generated.

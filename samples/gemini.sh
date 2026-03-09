@@ -1,0 +1,20 @@
+#!/bin/bash
+
+GEMINI_API_KEY=AIzaSyAOlbF_vBYvUlIbRdt4hzCiVBwT7lHE6vs
+
+
+curl -v "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Explain how AI works in a few words"
+          }
+        ]
+      }
+    ]
+  }'

@@ -20,8 +20,17 @@ struct object{
         children_[key] = value;
         return *this;
     }
+    object & clear(){
+        children_.clear();
+        return *this;
+    }
     object & add(const char * key , std::shared_ptr<basic_json> value){
         children_[key] = value;
+        return *this;
+    }
+    object & operator=(object & v){
+        children_.clear();
+        children_ = v.children_;
         return *this;
     }
     std::map<std::string , std::shared_ptr<basic_json> > & get(){return children_;}
@@ -69,7 +78,10 @@ basic_json & jsonObject::operator[](const char * key) {
     return  value_[key];
 }
 
-object & jsonObject::operator=(object & value) {return this->value_;}
+object & jsonObject::operator=(object & value) {
+    value_ = value;
+    return this->value_;
+}
 
 object &  jsonObject::get() {return value_;}
 
@@ -89,7 +101,7 @@ std::string  jsonObject::serialize() {
     std::string res  = "";
     res += "{";
     for(auto & itr : value_.get()){
-        res += '\n';
+        res += "\r\n";
         res += '\t';
         res += '\"';
         res += (itr.first) ;
@@ -107,8 +119,18 @@ std::string  jsonObject::serialize() {
         res += ',';
     }
     if(res[res.size() - 1] == ',')res.erase(res.size() - 1 , 1);
-    res += "\n}";
+    res += "\r\n}\r\n";
     return res;
+}
+
+jsonObject & jsonObject::clear(){
+    value_.clear();
+    return *this;
+}
+
+jsonObject & jsonObject::push(const char * key , basic_json & val){
+    value_.add( key , std::shared_ptr<basic_json>(&val));
+    return *this;
 }
 
 #endif

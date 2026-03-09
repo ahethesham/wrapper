@@ -15,7 +15,9 @@ class jsonArray;
 class visitor;
 
 class Serializable{
+
     public:
+        typedef std::string serialize_type;
         virtual std::string serialize() = 0;
 };
 
@@ -34,6 +36,8 @@ class jsonType  : public basic_json{
 
     virtual T& operator=(T &value) = 0;
     virtual T& get() = 0;
+    virtual jsonType<T>& clear() = 0;
+
     // serialize itself and return as string
     //virtual void acceptVisitor(visitor & v) = 0; 
 };
@@ -52,7 +56,9 @@ class Transformable{
 template<typename T>
 class Extendable{
     public:
-      virtual T & push(const char * ,  std::shared_ptr<basic_json>){throw std::runtime_error("Operation Not Permitted");}
+      virtual T& push(basic_json &) {throw std::runtime_error("Operation Not Permitted"); }
+      virtual T& push(const char * key ,  std::shared_ptr<basic_json>){throw std::runtime_error("Operation Not Permitted");}
+      virtual T& push(const char * key , basic_json & ){throw std::runtime_error("Operation Not Permitted");}
       virtual T & push(std::shared_ptr<basic_json> ){throw std::runtime_error("Operation Not Permitted");};
 };
 
@@ -65,6 +71,7 @@ class jsonArray : public jsonType<list> ,
     public:
         explicit  jsonArray(Tokenizer &);
         explicit jsonArray() ;
+        explicit jsonArray(jsonArray & array);
         basic_json& operator[](int idx) override;
         list & operator=(list &arr) override ;
         list & get() override ;
@@ -75,6 +82,8 @@ class jsonArray : public jsonType<list> ,
         jsonString & getAsString(int idx) override;
         jsonBoolean & getAsBoolean(int idx) override;
         jsonArray & push(std::shared_ptr<basic_json>) override;
+        jsonArray & push(basic_json &) override;
+        jsonArray & clear() override;
         //void acceptVisitor(visitor & v) override;
 };
 
@@ -85,7 +94,7 @@ class jsonObject : public jsonType<object> ,
     object &value_;
     public:
         jsonObject(Tokenizer &);
-        jsonObject();
+        jsonObject() ;
         basic_json & operator[](const char * key) override  ;
         object & operator=(object & value) override ;
         object &  get() override;
@@ -97,6 +106,8 @@ class jsonObject : public jsonType<object> ,
         jsonString & getAsString(const char * key) override;
         //virtual void acceptVisitor(visitor & v) override;
         jsonObject & push(const char * key , std::shared_ptr<basic_json>) override;
+        jsonObject & push(const char * key , basic_json & val) override;
+        jsonObject & clear() override;
 };
 
 class jsonString : public jsonType<std::string>
@@ -109,7 +120,9 @@ class jsonString : public jsonType<std::string>
         std::string & operator=(std::string &str) override;
         std::string & get()override;
         std::string serialize() override;
+        jsonString & clear() override;
         //virtual void acceptVisitor(visitor & v) override;
+
 };
 
 class jsonInteger : public jsonType<int> 
@@ -122,6 +135,7 @@ class jsonInteger : public jsonType<int>
         int & get() override;
         int & operator=(int & a) override;
         std::string serialize() override;
+        jsonInteger & clear() override;
         //virtual void acceptVisitor(visitor & v) override;
 };
 
@@ -134,6 +148,7 @@ class jsonBoolean : public jsonType<bool>
         bool & operator=(bool &val) override ;
         bool & get() override;
         std::string serialize() override;
+        jsonBoolean & clear() override;
         //virtual void acceptVisitor(visitor & v) override;
 };
 

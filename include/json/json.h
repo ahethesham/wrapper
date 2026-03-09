@@ -32,7 +32,7 @@ class json : public basic_json{
             root_ = new jsonObject(tokenizer);
        }
 
-        basic_json & operator[](const char *key){
+       basic_json & operator[](const char *key){
            return (*root_)[key];
        }
         
@@ -43,6 +43,14 @@ class json : public basic_json{
 
        template<typename T>
        jsonType<T> * get(const char *key);
+
+       json & operator=(jsonObject & val){
+            if(root_)
+                delete root_;
+            root_ = &val;
+            return *this;
+       }
+
 
 
 };

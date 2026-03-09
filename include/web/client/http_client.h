@@ -1,6 +1,10 @@
-#ifndef __TCP_SOCKET_H__
-#define __TCP_SOCKET_H__
+#ifndef __HTTP_CLIENT_H__
+#define __HTTP_CLIENT_H__
 
+#include "connector.h"
+#include "client.h"
+#include "http_writer.h"
+#if 0
 /*
  * create and connect a tcp connection
  */
@@ -8,8 +12,6 @@
 #include "response.h"
 class tcp{
     static short socket_type ;
-    
-
 };
 class tcp_resolver{};
 class http_connector{};
@@ -57,4 +59,16 @@ class ClientFactory{
     protected:
         ClientFactory(){}
 };
+#endif
+
+/*
+ *Should take care of framing the http request
+ */
+class BaseClient{
+
+
+
+};
+
+
 #endif

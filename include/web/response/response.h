@@ -3,10 +3,10 @@
 #define __RESPONSE_H__
 #include <unistd.h>
 #include "json_fwd.h"
-//#include "web_fwd.h"
+#include "web_fwd.h"
 
 template< typename Protocol ,
-          typename Parser  ,
+          typename Parser   ,
           typename Allocator >
 class basic_response : public Serializable{
     
@@ -30,13 +30,18 @@ class basic_response : public Serializable{
             return *this;
         }
     template<typename ... Args>
-        basic_response & addHeaders(Args ... args){
-            protocol_.addHeaders(std::forward<Args>(args)...);
+        basic_response & addHeader(Args ... args){
+            protocol_.addHeader(std::forward<Args>(args)...);
             return *this;
         }
     template<typename ... Args>
         basic_response & addQueryParam(Args ... args){
             protocol_.addQueryParam(std::forward<Args>(args)...);
+            return *this;
+        }
+    template<typename ... Args>
+        basic_response & addStatusLine(Args ... args){
+            protocol_.addStatusLine(std::forward<Args>(args) ... );
             return *this;
         }
     serialize_type  serialize(){
@@ -49,7 +54,7 @@ class basic_response : public Serializable{
         return protocol_.body();
     }
     response_line_type & responseLine(){
-        return protocol_.requestLine();
+        return protocol_.responseLine();
     }
 };
 #endif

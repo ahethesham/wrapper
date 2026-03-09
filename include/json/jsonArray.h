@@ -16,6 +16,10 @@ struct list{
         return  *this;
     }
     std::vector<std::shared_ptr<basic_json>> & get() {return children_;}
+    list & clear(){
+        children_.clear();
+        return *this;
+    }
     list() : children_(std::vector< std::shared_ptr<basic_json> > (0,nullptr)){}
 };
 
@@ -72,6 +76,8 @@ jsonArray::jsonArray(Tokenizer & tokenizer  ) : value_(*new list()){
 }
 jsonArray::jsonArray(  ) : value_(*new list()){}
 
+jsonArray::jsonArray(jsonArray & array) : value_(array.value_){}
+
 
 
 std::string jsonArray::serialize(){
@@ -89,4 +95,13 @@ std::string jsonArray::serialize(){
     
 }
 
+jsonArray & jsonArray::clear(){
+    value_.clear();
+    return *this;
+}
+
+jsonArray & jsonArray::push(basic_json & v){
+    value_.push_back(std::shared_ptr<basic_json>(&v));
+    return *this;
+}
 #endif
