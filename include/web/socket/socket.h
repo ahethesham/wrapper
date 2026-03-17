@@ -21,8 +21,8 @@ class basic_socket : public creational_policy{
 
 
     public:
-        typedef creational_policy::sockaddr_type     sockaddr_type;
-        typedef creational_policy::fd_type       fd_type ;
+        typedef typename creational_policy::sockaddr_type     sockaddr_type;
+        typedef typename creational_policy::fd_type           fd_type ;
         using creational_policy::network;
     private:
         //creational_policy * socket_creator_;
@@ -32,7 +32,13 @@ class basic_socket : public creational_policy{
         {
         };
 
-        basic_socket(fd_type fd )  : creational_policy(fd) {}
+        basic_socket(int fd )  : creational_policy(fd) {}
+
+        bool is_closed(){
+            return false;
+        }
+
+        basic_socket(sockaddr_type addr) : creational_policy(addr) {}
 
         basic_socket(fd_type fd , sockaddr_type addr) : creational_policy(fd) {}
 #if 0

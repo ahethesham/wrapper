@@ -1,59 +1,22 @@
 #ifndef __JSON_H__
 #define __JSON_H__
-#include <cassert>
-#include <map>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#include "stream.h"
-#include "token.h"
 #include "json_fwd.h"
 
 
-class json : public basic_json{
-    char * input_;
-    jsonObject * root_;
-    public:
-       json(std::string &input);
-       json() : root_(new jsonObject()){}
-       json(const char *input){
-           std::vector<char> pass = {' ' , '\r' ,'\n' , '\t' , ',' };
-            Tokenizer tokenizer(input , pass);
-            if(!tokenizer.hasNext() || tokenizer.getNext()->type_ != TokenType::OpenBracket)
-                throw std::runtime_error("unexpected json file provided ");
-            root_ = new jsonObject(tokenizer);
-       }
-       void create(const char * input){
-           std::vector<char> pass = {' ' , '\r' ,'\n' , '\t' , ',' };
-            Tokenizer tokenizer(input , pass);
-            if(!tokenizer.hasNext() || tokenizer.getNext()->type_ != TokenType::OpenBracket)
-                throw std::runtime_error("unexpected json file provided ");
-            root_ = new jsonObject(tokenizer);
-       }
+json_object * json_builder(const char * input){
+    json_tokenizer * tokenizer = new json_tokenizer(input);
+    tokenizer->register_token_handler('{' , json_object::build );
+    tokenizer->register_token_handler('[' , json_array::build );
+    tokenizer->register_token_handler('\"' , json_string::build );
+    for(int i = 0 ; i < 10 ; i++){
+        tokenizer->register_token_handler(char('0' + i) , json_int::build);
+    }
 
-       basic_json & operator[](const char *key){
-           return (*root_)[key];
-       }
-        
-       std::string serialize() override{
-           return root_->serialize();
-       }
-       jsonObject & get(){return *root_;}
-
-       template<typename T>
-       jsonType<T> * get(const char *key);
-
-       json & operator=(jsonObject & val){
-            if(root_)
-                delete root_;
-            root_ = &val;
-            return *this;
-       }
-
-
-
-};
-
+    tokenizer->register_token_handler('f' , json_bool::build );
+    tokenizer->register_token_handler('t' , json_bool::build );
+    tokenizer->register_token_handler('n' , json_null::build );
+    
+    return new json_object(tokenizer);
+}
 
 #endif

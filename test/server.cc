@@ -30,12 +30,18 @@ int main(){
     });
     server.run();
 #else
+#if 1
     https_client client(443 , "generativelanguage.googleapis.com");
-    http_request request(http::HTTP_1_0);
+#endif
+    http_request request;
+    http_1_0_request_line line;
 
-    request.setUri("/v1beta/models/gemini-3-flash-preview:generateContent");
-    request.setMethod("POST");
-    request.setHttpVersion("HTTP/1.0");
+
+    request.requestLine().uri() = "/v1beta/models/gemini-3-flash-preview:generateContent";
+    request.requestLine().method() = "POST";
+
+
+
 
     auto headers = request.header();
     headers["x-goog-api-key"] = "AIzaSyAOlbF_vBYvUlIbRdt4hzCiVBwT7lHE6vs";
@@ -55,16 +61,16 @@ int main(){
     headers["Content-Length"] = std::to_string(inner2.serialize().size());
     headers["User-agent"] = "testing";
     headers["Host"] = "generativelanguage.googleapis.com";
-    request.addBody(inner2.serialize().c_str());
-    log("sending request with headers %s " , request.header().serialize().c_str());
+    request.body() = inner2.get();
+    log("sending request with headers %s " , request.serialize().c_str());
     
+#if 1
     auto response = client.send(request);
 
-    log("response received %s ", response.serialize().c_str());
+    log("response received %s ", response.body().serialize().c_str());
+#endif
 #endif
     log("Shutting Down Bye ");
-
-
-    return 0;
+    exit( 0);
 
 }

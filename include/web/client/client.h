@@ -8,6 +8,7 @@
 #include "logger.h"
 #include <exception>
 #include <string>
+
 template < typename socketPolicy ,
            typename endpointPolicy ,
            typename connectPolicy ,
@@ -44,17 +45,14 @@ class basic_client : public clientBase {
                 endpoint_ = new endpoint_type(port , std::string(host));
                 socket_ = new socket_type();
                 connector_ = new connect_type(*socket_ , *endpoint_);
-                log("initializing stream ");
-                stream_ = new stream_type(socket_->get());
-                log("Done with setup");
+                stream_ = new stream_type(socket_);
             }catch(std::exception & e){
                 log("failed to connect with the client ");
             }
         }
 
-        response_type  send(request_type & req){
+        response_type & send(request_type & req){
             assert(stream_ != nullptr);
-            log("writing request");
             stream_->write(req);
             return stream_->read();
         }

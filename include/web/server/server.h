@@ -66,7 +66,7 @@ class basic_server : public base_server{
                     /*
                      * read and create a request for this client fd as per the protocol given by user 
                      */
-                    stream_type * io_stream = new stream_type(newClient.get());
+                    stream_type * io_stream = new stream_type(&newClient);
                     // call the process function for the base server given by the client 
                     auto req = io_stream->read();
                     // used defined handlers 

@@ -3,161 +3,76 @@
 
 #include <memory>
 #include <string>
-#include "token.h"
-struct object;
-struct list;
-
-class jsonObject;
-class jsonString;
-class jsonInteger;
-class jsonBoolean;
-class jsonArray;
-class visitor;
-
-class Serializable{
-
-    public:
-        typedef std::string serialize_type;
-        virtual std::string serialize() = 0;
-};
-
-// base abstract type for json
-class basic_json : public Serializable{};
+#include <variant>
+#include "buffer.h"
+#include "logger.h"
 
 
-template<typename T>
-class jsonType  : public basic_json{
-    public:
-    // each corresponding concrete class should take care of initializing its value with the given 
-    // datatypes which do not support certain methods and operatos will throw an runtime exception
-    typedef T value_type;
-    typedef T* pointer;
-    typedef T& reference;
+ 
 
-    virtual T& operator=(T &value) = 0;
-    virtual T& get() = 0;
-    virtual jsonType<T>& clear() = 0;
+template<typename impl>
+class basic_object ;
 
-    // serialize itself and return as string
-    //virtual void acceptVisitor(visitor & v) = 0; 
-};
+template<typename impl >
+class basic_tokenizer;
 
-template<typename T>
-class Transformable{
-    public:
-        virtual basic_json &operator[](T key) = 0;
-        virtual jsonArray & getAsArray(T key) = 0;
-        virtual jsonObject & getAsObject(T key) = 0;
-        virtual jsonString & getAsString(T key) = 0;
-        virtual jsonBoolean & getAsBoolean(T key) = 0;
-        virtual jsonInteger & getAsInteger(T key) = 0;
-};
+class token_v1;
+class json_grammer;
 
-template<typename T>
-class Extendable{
-    public:
-      virtual T& push(basic_json &) {throw std::runtime_error("Operation Not Permitted"); }
-      virtual T& push(const char * key ,  std::shared_ptr<basic_json>){throw std::runtime_error("Operation Not Permitted");}
-      virtual T& push(const char * key , basic_json & ){throw std::runtime_error("Operation Not Permitted");}
-      virtual T & push(std::shared_ptr<basic_json> ){throw std::runtime_error("Operation Not Permitted");};
-};
+template<typename  token_policy ,
+         typename grammer_policy ,
+         typename  buffer_policy>
+class tokenizer_impl;
 
-class jsonArray : public jsonType<list> , 
-                  public Transformable<int> , 
-                  public Extendable<jsonType<list>>
-{
+using  json_tokenizer = basic_tokenizer<tokenizer_impl<token_v1 ,json_grammer , buffer_v1>>;
 
-    list &value_;
-    public:
-        explicit  jsonArray(Tokenizer &);
-        explicit jsonArray() ;
-        explicit jsonArray(jsonArray & array);
-        basic_json& operator[](int idx) override;
-        list & operator=(list &arr) override ;
-        list & get() override ;
-        std::string serialize() override;
-        jsonObject & getAsObject(int idx) override;
-        jsonArray & getAsArray(int idx)override;
-        jsonInteger & getAsInteger(int idx) override ;
-        jsonString & getAsString(int idx) override;
-        jsonBoolean & getAsBoolean(int idx) override;
-        jsonArray & push(std::shared_ptr<basic_json>) override;
-        jsonArray & push(basic_json &) override;
-        jsonArray & clear() override;
-        //void acceptVisitor(visitor & v) override;
-};
+template<typename T ,
+         typename return_type >
+class Iterator;
 
-class jsonObject : public jsonType<object> ,
-                   public Transformable<const char *> , 
-                   public Extendable<jsonType<object>>
-{
-    object &value_;
-    public:
-        jsonObject(Tokenizer &);
-        jsonObject() ;
-        basic_json & operator[](const char * key) override  ;
-        object & operator=(object & value) override ;
-        object &  get() override;
-        std::string serialize() override;
-        jsonObject & getAsObject(const char * key) override;
-        jsonInteger & getAsInteger(const char * key) override;
-        jsonBoolean & getAsBoolean(const char * key) override;
-        jsonArray & getAsArray(const char * key) override;
-        jsonString & getAsString(const char * key) override;
-        //virtual void acceptVisitor(visitor & v) override;
-        jsonObject & push(const char * key , std::shared_ptr<basic_json>) override;
-        jsonObject & push(const char * key , basic_json & val) override;
-        jsonObject & clear() override;
-};
+template< typename token_policy ,
+          typename buffer_policy = buffer_v1 >
+class json_array_impl;
 
-class jsonString : public jsonType<std::string>
-{
-    std::string  value_;
-    public:
-        explicit jsonString(Tokenizer & tokenizer , token * current);
-        explicit jsonString(Tokenizer & tokenizer );
-        explicit jsonString(const char * value_) ;
-        std::string & operator=(std::string &str) override;
-        std::string & get()override;
-        std::string serialize() override;
-        jsonString & clear() override;
-        //virtual void acceptVisitor(visitor & v) override;
+template< typename token_policy ,
+          typename buffer_policy = buffer_v1 >
+class json_string_impl;
 
-};
+template< typename token_policy ,
+          typename buffer_policy = buffer_v1 >
+class json_null_impl;
 
-class jsonInteger : public jsonType<int> 
-{
-    int &value_;
-    public:
-        jsonInteger(Tokenizer & , token*);
-        jsonInteger(Tokenizer &);
-        jsonInteger(int l) : value_(*new int(l)){}
-        int & get() override;
-        int & operator=(int & a) override;
-        std::string serialize() override;
-        jsonInteger & clear() override;
-        //virtual void acceptVisitor(visitor & v) override;
-};
+template< typename token_policy ,
+          typename buffer_policy = buffer_v1 >
+class json_object_impl;
 
-class jsonBoolean : public jsonType<bool> 
-{
-    bool &value_;
-    public:
-        jsonBoolean(Tokenizer &tokensize , token *);
-        jsonBoolean(bool val) : value_(*new bool(val)){}
-        bool & operator=(bool &val) override ;
-        bool & get() override;
-        std::string serialize() override;
-        jsonBoolean & clear() override;
-        //virtual void acceptVisitor(visitor & v) override;
-};
+template<typename token_policy ,
+         typename buffer_policy = buffer_v1>
+ class json_int_impl;
 
-#include "types.h"
-#include "jsonObject.h"
-#include "jsonArray.h"
-#include "jsonString.h"
-#include "jsonBool.h"
-#include "jsonInteger.h"
-#include "json.h"
+template<typename token_policy ,
+         typename buffer_policy = buffer_v1>
+ class json_boolean_impl;
+
+
+
+using json_array = basic_object<json_array_impl<json_tokenizer>>;
+using json_object = basic_object<json_object_impl<json_tokenizer>>;
+using json_string = basic_object<json_string_impl<json_tokenizer>>;
+using json_null   = basic_object<json_null_impl<json_tokenizer>>;
+using json_int    = basic_object<json_int_impl<json_tokenizer>>;
+using json_bool    = basic_object<json_boolean_impl<json_tokenizer>>;
+
+using variants = std::variant<json_array * , json_object * , json_string * , json_null *, json_int * , json_bool *>;
 
 #endif
+
+
+#include "basic_object.h"
+#include "jsonArray.h"
+#include "jsonObject.h"
+#include "jsonString.h"
+#include "token.h"
+#include "buffer.h"
+
+

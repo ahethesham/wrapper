@@ -3,7 +3,9 @@
 
 #include <string>
 #include "logger.h"
+#include "stream_fwd.h"
 
+#if 0
 /*
  * This is not a thread safe code 
  */
@@ -48,29 +50,45 @@ class basic_stream{
             reader_->reset();
         }
 };
+#else
 
 template < typename istream_policy ,
-         typename ostream_policy >
-class stream{
+           typename ostream_policy >
+class basic_stream{
     
     istream_policy * istream_;
     ostream_policy * ostream_;
-    typedef  istream_policy::socket_type isocket_type;
-    typedef istream_policy::return_type  istream_return_type;
-    typedef ostream_policy::return_type  ostream_return_type;
+    // read to the input
+    using isocket_type = istream_policy::socket_type ;
+    using istream_return_type =  istream_policy::return_type ;
+    using ostream_protocol_type = ostream_policy::protocol_type;
+    // write to the output
+    typedef ostream_policy::return_type ostream_return_type;
+
     public:
-        stream(isocket_type socket) : istream_(new istream_policy(socket.get()) ) ,
-                                      ostream_(new ostream_policy(socket.get()))  {} 
+        basic_stream(isocket_type socket) : istream_(new istream_policy(socket) ) ,
+                                      ostream_(new ostream_policy(socket))  {} 
+
+        basic_stream(isocket_type * socket) : istream_(new istream_policy(socket) ) ,
+                                      ostream_(new ostream_policy(socket))  {} 
 
         istream_return_type read(){
             return istream_->read();
         }
+
+        basic_stream(const char * file_path) : istream_(new istream_policy(file_path)) ,
+                                               ostream_(new ostream_policy(file_path)){}
+
         
         ostream_return_type write(){
             return ostream_->write();
         }
+        ostream_return_type write(ostream_protocol_type & body){
+            return ostream_->write(body);
+        }
 
 };
 
+#endif
 
 #endif

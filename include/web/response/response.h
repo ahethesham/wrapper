@@ -5,9 +5,8 @@
 #include "json_fwd.h"
 #include "web_fwd.h"
 
-template< typename Protocol ,
-          typename Parser   ,
-          typename Allocator >
+#if 0
+template< typename Protocol >
 class basic_response : public Serializable{
     
     typedef typename Protocol::value_type           value_type;
@@ -57,4 +56,5 @@ class basic_response : public Serializable{
         return protocol_.responseLine();
     }
 };
+#endif
 #endif

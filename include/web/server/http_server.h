@@ -4,6 +4,7 @@
 #include <functional>
 #include "web_fwd.h"
 
+
 /*
  * This should be responsible for creating a uri to func mapper 
  */
@@ -13,13 +14,13 @@ class basic_matcher{
     private:
         struct baseMatcher{
             std::string  uri_;
-            int type_;
+            std::string type_;
             handler handler_;
-            baseMatcher(std::string & uri , int type , handler func) : uri_(uri) , type_(type) , handler_(func){}
+            baseMatcher(std::string & uri , std::string type , handler func) : uri_(uri) , type_(type) , handler_(func){}
         };
         std::vector< baseMatcher *> inventory_; 
     public:
-        basic_matcher & push( std::string  uri , int requestType , handler func  ){
+        basic_matcher & push( std::string  uri , std::string requestType , handler func  ){
             // create a baceMatcher and push this 
             inventory_.push_back(new baseMatcher(uri , requestType , func));
             return * this;
@@ -29,7 +30,7 @@ class basic_matcher{
             // get the corresponding func handler and directly execute the function 
             for(auto itr = inventory_.begin() ; itr != inventory_.end() ; itr++){
                 if(strcmp((*itr)->uri_.c_str() , uri.c_str()) == 0 && 
-                   req.requestLine().getType() == (*itr)->type_){
+                   req.requestLine().method() == (*itr)->type_){
                     (*itr)->handler_(req , res);
                     break;
                 }
@@ -52,22 +53,22 @@ class HttpServer : private matcher{
 
     public:
         void process( http_request &req , http_response & res){
-            matcher::execute(req.requestLine().getUri() , req , res);
+            matcher::execute(req.requestLine().uri() , req , res);
         }
         HttpServer & GET(const char * uri , handler func){
-            matcher::push(std::string(uri) , 0 , func);
+            matcher::push(std::string(uri) , std::string("GET") , func);
             return  *this;
         }
         HttpServer & POST(const char *uri, handler func){
-            matcher::push(std::string(uri) , 1 , func);
+            matcher::push(std::string(uri) , std::string("POST") , func);
             return *this;
         }
         HttpServer & PUT(const char * uri, handler func){
-            matcher::push(std::string(uri) , 2 , func);
+            matcher::push(std::string(uri) , std::string("PUT") , func);
             return *this;
         }
         HttpServer & DELETE(const char *uri, handler func){
-            matcher::push(std::string(uri) , 3 , func);           
+            matcher::push(std::string(uri) , std::string("DELETE") , func);           
             return *this;
         }
 

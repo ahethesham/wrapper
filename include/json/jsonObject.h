@@ -2,135 +2,83 @@
 #define __JSON_OBJECT_H__
 
 #include "json_fwd.h"
-#include "token.h"
-#include <cstring>
-#include <memory>
-#include <iostream>
 #include <map>
-#include <ostream>
 
-/* custom data type for the json object */
-struct object{
-    std::map<std::string , std::shared_ptr<basic_json> > children_;
-    basic_json &operator[](const char *key){
-        return *children_[std::string(key)];
-    } 
-    object() : children_(std::map<std::string , std::shared_ptr<basic_json> >()) {}
-    object & add(std::string & key , std::shared_ptr<basic_json> value){
-        children_[key] = value;
-        return *this;
-    }
-    object & clear(){
-        children_.clear();
-        return *this;
-    }
-    object & add(const char * key , std::shared_ptr<basic_json> value){
-        children_[key] = value;
-        return *this;
-    }
-    object & operator=(object & v){
-        children_.clear();
-        children_ = v.children_;
-        return *this;
-    }
-    std::map<std::string , std::shared_ptr<basic_json> > & get(){return children_;}
-};
 
-jsonObject::jsonObject(Tokenizer &tokenizer ) : value_(*new object()){
+template < typename token_policy ,
+        typename buffer_policy >
+class json_object_impl{
+    public:
+        using tokenizer_type = token_policy;
+        using token_type     = typename token_policy::token_type;
+        using iterator       = Iterator<json_object_impl , std::pair<std::string , variants> > *;
+        using value_type     = std::map<std::string , variants>;
+        using buffer_type    = buffer_policy;
+        using token_handler  = typename token_policy::token_handler;
 
-       while(tokenizer.hasNext()){
-            auto next = tokenizer.getNext();
-            // json has completed 
-            if(next->type_ == TokenType::ClosedBracket)break;
-            // keys always has to be strings 
-            if(next->type_ != TokenType::String)throw std::runtime_error("unexpected json 003");
-            std::string key = next->value_;
-            // got the key ... extract the value now
-            next = tokenizer.getNext();
-            if(next->type_ != TokenType::Colon)throw std::runtime_error("unexpected json 004");
-            next = tokenizer.getNext();
-            switch(next->type_){
-                case TokenType::OpenBracket:
-                    value_.add(key , std::make_shared<jsonObject>(tokenizer));
-                    break;
-                case TokenType::OpenBrace:
-                    value_.add(key , std::make_shared<jsonArray>(tokenizer));
-                    break;
-                case TokenType::String:
-                    value_.add(key , std::make_shared<jsonString>(tokenizer,next));
-                    break;
-                case TokenType::Number:
-                    value_.add(key , std::make_shared<jsonInteger>(tokenizer , next));
-                    break;
-                case TokenType::Bool:
-                    value_.add(key , std::make_shared<jsonBoolean>(tokenizer , next));
-                    break;
-                default:
-                    throw std::runtime_error("unexpected json file");
-                    break;
+        json_object_impl(tokenizer_type * tokenizer){
+            this->parse(tokenizer);
         }
-   }
-}
 
-jsonObject::jsonObject( ) : value_(*new object()){}
-    
-basic_json & jsonObject::operator[](const char * key) {
-    return  value_[key];
-}
 
-object & jsonObject::operator=(object & value) {
-    value_ = value;
-    return this->value_;
-}
+        json_object_impl * parse(tokenizer_type * tokenizer){
+            assert(tokenizer->getNext()->compare('{'));
+            ++(*tokenizer);
 
-object &  jsonObject::get() {return value_;}
+            while(tokenizer->hasNext()){
 
-jsonObject & jsonObject::getAsObject(const char * key)  { return (jsonObject &)value_[key]; }
-jsonString & jsonObject::getAsString(const char * key) {return (jsonString &)value_[key];}
-jsonInteger & jsonObject::getAsInteger(const char * key) {return (jsonInteger &)value_[key];}
-jsonBoolean & jsonObject::getAsBoolean(const char * key) {return (jsonBoolean&)value_[key];}
-jsonArray & jsonObject::getAsArray(const char * key) {return (jsonArray&)value_[key];}
-
-jsonObject & jsonObject::push(const char *key, std::shared_ptr<basic_json> obj) {
-    assert(obj != nullptr);
-    value_.add(key , obj);
-    return *this;
-}
-
-std::string  jsonObject::serialize() {
-    std::string res  = "";
-    res += "{";
-    for(auto & itr : value_.get()){
-        res += "\r\n";
-        res += '\t';
-        res += '\"';
-        res += (itr.first) ;
-        res += '\"';
-        res += ": ";
-        auto secondaryString = (itr.second)->serialize();
-        std::string temp = "";
-        for(int i = 0 ; i < secondaryString.size() ; i++){
-            if(secondaryString[i] == '\t' || secondaryString[i] == '}'){
-                temp += '\t';
+                if(tokenizer->peek_next_char() == '}'){
+                    tokenizer->get_next_char();
+                    break;
+                }
+                token_type * nextToken = tokenizer->getNext();
+                // key has to be a string 
+                assert(nextToken->compare('\"'));
+                json_string * key = std::get<json_string *>(nextToken->cb(tokenizer));
+                nextToken = tokenizer->getNext();
+                auto value = nextToken->cb(tokenizer);
+                if(key->get() == "profile")
+                    log("wtf %c" , tokenizer->peek_next_char());
+                storage_[key->get()] = value;
             }
-            temp+=secondaryString[i];
+            return this;
         }
-        res += temp;
-        res += ',';
-    }
-    if(res[res.size() - 1] == ',')res.erase(res.size() - 1 , 1);
-    res += "\r\n}\r\n";
-    return res;
-}
+        
+        json_object_impl & push(std::string key , variants & value){
+            storage_[key] = value;
+        }
 
-jsonObject & jsonObject::clear(){
-    value_.clear();
-    return *this;
-}
+        variants operator[](std::string key){
+            return storage_[key];
+        }
 
-jsonObject & jsonObject::push(const char * key , basic_json & val){
-    value_.add( key , std::shared_ptr<basic_json>(&val));
-    return *this;
-}
+        iterator begin(){
+            return new iterator(this);
+        }
+
+        int end(){
+            return storage_.size();
+        }
+
+        value_type & get(){
+            return storage_;
+        }
+
+        std::string serialize(){
+            return "";
+        }
+
+        template<typename T >
+            T  get(std::string & key){
+                auto val = storage_[key];
+                if(std::get_if<T*>(storage_[key]) == nullptr)
+                    throw std::runtime_error("ERR_EVNT_0000006");
+                return val;
+            }
+
+
+    private:
+        value_type   storage_;
+};
 
 #endif

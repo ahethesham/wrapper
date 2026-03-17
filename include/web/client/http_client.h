@@ -1,9 +1,7 @@
 #ifndef __HTTP_CLIENT_H__
 #define __HTTP_CLIENT_H__
 
-#include "connector.h"
-#include "client.h"
-#include "http_writer.h"
+#include "web_fwd.h"
 #if 0
 /*
  * create and connect a tcp connection

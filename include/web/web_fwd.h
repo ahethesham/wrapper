@@ -3,29 +3,8 @@
 
 #include <unistd.h>
 #include "openssl/ssl.h"
-extern struct Dummy;
-/*
- * Should only contain all the declarations 
- */
-//stream
-
-template<typename fd ,
-        typename reader ,
-        typename writer>
-class basic_stream;
-inline ssize_t std_reader(int , void * , ssize_t);
-inline ssize_t ssl_reader(SSL* , void * , ssize_t);
-template < typename custom_protocol ,
-            typename fd_type = int,
-            auto reader = std_reader>
-class http_reader;
-
-inline ssize_t std_writer(int , void * , ssize_t);
-inline ssize_t ssl_writer(SSL* , void * , ssize_t);
-template < typename custom_protocol ,
-            typename fd_type = int,
-            auto writer = std_reader>
-class http_writer;
+#include "json_fwd.h"
+#include "stream_fwd.h"
 
 template<typename socket>
 class basic_acceptor;
@@ -43,29 +22,6 @@ typedef basic_endpoint<endpoint> tcp_endpoint;
 template<typename socket>
 class basic_listener;
 
-template<typename Protocol ,
-         typename Allocator = Dummy>
-class basic_request ; 
-
-
-template<typename Protocol ,
-         typename Parser = Dummy,
-         typename Allocator = Dummy>
-class basic_response ; 
-
-namespace http{
-    class HttpHeaders;
-    class QueryParameters;
-
-    class RequestLine;
-    class HttpRequest;
-    
-    class StatusLine;
-    class HttpResponse;
-}
-
-typedef basic_request<http::HttpRequest  > http_request;
-typedef basic_response<http::HttpResponse> http_response;
 
 template < typename socket_creator>
 class basic_socket ;
@@ -110,6 +66,7 @@ class basic_matcher;
 template < typename connectorPolicy >
 class basic_connector;
 
+class BaseClient;
 template < typename socketPolicy ,
            typename endpointPolicy ,
            typename connectPolicy ,
@@ -119,24 +76,21 @@ template < typename socketPolicy ,
            typename clientBase >
 class basic_client ;
 
-class BaseClient;
 
 
 #endif
+
 #include "http_reader.h"
 #include "http_writer.h"
-#include "http_server.h"
-#include "http_response.h"
-#include "basic_http_request.h"
-#include "response.h"
 #include "server.h"
-#include "http_request.h"
 #include "socket.h"
 #include "tcp_socket.h"
 #include "bind.h"
-#include "acceptor.h"
 #include "endpoint.h"
 #include "listener.h"
 #include "stream.h"
 #include "client.h"
-
+#include "buffer.h"
+#include "http_server.h"
+#include "http_request_fwd.h"
+#include "http_client.h"

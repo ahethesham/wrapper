@@ -7,8 +7,7 @@
 #include "web_fwd.h"
 
 #if 0
-template<typename Protocol ,
-         typename Allocator >
+template<typename Protocol  >
 class basic_request : public Serializable ,
                       public Protocol
 {

@@ -5,7 +5,13 @@
 #include <cassert>
 #include <sys/socket.h>
 #include <stdexcept>
+
+#ifndef __linux__
 #include <__type_traits/is_same.h>
+#else
+#include <type_traits>
+#endif
+
 #ifdef __SSL
 #include "openssl/ssl.h"
 #endif

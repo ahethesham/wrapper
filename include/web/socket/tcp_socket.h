@@ -78,6 +78,16 @@ class tcp_ssl_socket_creator  : tcp_socket_creator<network_type , communication_
             assert( ssl_fd_ != nullptr);
             assert(SSL_set_fd(ssl_fd_ , base_socket_->get()) == 1);
         }
+
+        tcp_ssl_socket_creator(base_socket_type::fd_type fd ):
+        base_socket_(new base_socket_type(fd)){
+            
+            assert(base_socket_ != nullptr);
+            createContext();
+            ssl_fd_ = SSL_new(ctx_);
+            assert( ssl_fd_ != nullptr);
+            assert(SSL_set_fd(ssl_fd_ , base_socket_->get()) == 1);
+        }
         fd_type get(){
             return ssl_fd_;
         }

@@ -4,9 +4,7 @@
 #include <cstring>
 #include <string.h>
 #include <unistd.h>
-#include "buffer.h"
 #include "web_fwd.h"
-#include "http_request.h"
 #include "logger.h"
 
 inline ssize_t std_reader(int fd , void * buffer , ssize_t size){
@@ -225,28 +223,32 @@ class http_reader {
 
 #else
 
-template < typename socket_policy = tcp_ssl_socket , 
-           typename buffer_policy = buffer_v1  ,
-           auto reader = ssl_reader>
-class basic_http_reader{
+template < typename socket_policy  , 
+           typename buffer_policy   ,
+           auto reader >
+class basic_reader{
     public:
         using buffer_type = buffer_policy;
         using socket_type = socket_policy;
 
-        buffer_type * buffer_;
-        socket_type::fd_type fd_;
-        basic_http_reader(socket_type::fd_type fd) : fd_(fd) {}
+        basic_reader(socket_type::fd_type fd) : fd_(fd)  ,  buffer_(new buffer_policy()) {}
         buffer_type * read(){
             int rc = reader(fd_ , (buffer_->data + buffer_->tail) , 64 * 1024);
             if(rc > 0){
                 buffer_->tail += rc;
+                buffer_->remainingBytes += rc;
+            }else {
+                return nullptr;
             }
             return buffer_;
         }
+    private:
+        buffer_type * buffer_;
+        socket_type::fd_type fd_;
 
 };
 
-using http_1_0_reader = basic_http_reader<tcp_socket , buffer_v1 , std_reader>;
-using https_1_0_reader = basic_http_reader<tcp_ssl_socket , buffer_v1 , ssl_reader>;
+using http_1_0_reader = basic_reader<tcp_socket , buffer_v1 , std_reader>;
+using https_1_0_reader = basic_reader<tcp_ssl_socket , buffer_v1 , ssl_reader>;
 #endif
 #endif

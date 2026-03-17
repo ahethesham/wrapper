@@ -9,9 +9,10 @@ struct buffer_v1{
     char data[1024 * 1024] ;
     uint64_t head;
     uint64_t tail;
+    uint64_t remainingBytes;
     buffer_v1() {
         memset(data , 0 , sizeof(data));
-        head = tail = 0;
+        head = tail = remainingBytes = 0 ;
     }
 };
 

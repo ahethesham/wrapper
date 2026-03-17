@@ -5,103 +5,92 @@
 #include "json_fwd.h"
 #include <memory>
 
-// custom data type for the json array
-struct list{
-    std::vector<std::shared_ptr<basic_json >> children_;
-    basic_json & operator[](int idx){
-        return *children_[idx];
-    }
-    list & push_back(std::shared_ptr<basic_json> ptr){
-        children_.push_back(ptr);
-        return  *this;
-    }
-    std::vector<std::shared_ptr<basic_json>> & get() {return children_;}
-    list & clear(){
-        children_.clear();
-        return *this;
-    }
-    list() : children_(std::vector< std::shared_ptr<basic_json> > (0,nullptr)){}
+
+template<typename T ,
+        typename return_type>
+class Iterator{
+    public:
+        return_type getNext(){
+            //
+            return impl_->storage_[idx_++];
+        }
+        Iterator(T * impl) : impl_(impl) {}
+        bool hasNext(){
+            return idx_ < impl_->storage_.size();
+        }
+
+        bool operator==(int size){
+            return idx_ >= size;
+        }
+
+        bool operator==(Iterator<T,return_type> & itr){
+            return itr.getIdx() == idx_;
+        }
+
+        int getIdx(){
+            return idx_;
+        }
+
+    private:
+        T * impl_;
+        int idx_;
 };
 
-basic_json & jsonArray::operator[](int idx) { return (value_[idx]); }
-
-list & jsonArray::operator=(list &arr) {return value_ = arr;}
-
-list & jsonArray::get() {return value_;}
-
-jsonObject & jsonArray::getAsObject(int idx) { return (dynamic_cast<jsonObject&>(value_[idx])); }
-
-jsonArray & jsonArray::getAsArray(int idx) { return dynamic_cast<jsonArray&>(value_[idx]); }
-
-jsonInteger & jsonArray::getAsInteger(int idx) { return dynamic_cast<jsonInteger&>(value_[idx]); }
-
-jsonString & jsonArray::getAsString(int idx) { return dynamic_cast<jsonString&>(value_[idx]); }
-
-jsonBoolean & jsonArray::getAsBoolean(int idx) { return dynamic_cast<jsonBoolean &>(value_[idx]); }
-
-jsonArray & jsonArray::push(std::shared_ptr<basic_json> obj) { 
-    assert(obj); 
-    value_.push_back(obj);
-    return *this;  
-}
-
-
-jsonArray::jsonArray(Tokenizer & tokenizer  ) : value_(*new list()){
-
-        while(tokenizer.hasNext()){
-            auto next = tokenizer.getNext();
-            if(next->type_ == TokenType::ClosedBrace)break;
-            switch(next->type_){
-                case TokenType::OpenBracket:
-                    value_.push_back(std::make_shared<jsonObject>(tokenizer ));
-                    break;
-                case TokenType::OpenBrace:
-                    value_.push_back(std::make_shared<jsonArray>(tokenizer ));
-                    break;
-                case TokenType::String:
-                    value_.push_back(std::make_shared<jsonString>(tokenizer , next));
-                    break;
-                case TokenType::Number:
-                    value_.push_back(std::make_shared<jsonInteger>(tokenizer , next));
-                    break;
-                case TokenType::Bool:
-                    value_.push_back( std::make_shared<jsonBoolean>(tokenizer , next));
-                    break;
-                default:
-                    throw std::runtime_error("unexpected json file");
-                    break;
-
-            }
-        }
-}
-jsonArray::jsonArray(  ) : value_(*new list()){}
-
-jsonArray::jsonArray(jsonArray & array) : value_(array.value_){}
-
-
-
-std::string jsonArray::serialize(){
-    // must serialize and return a string 
-    std::string res = "";
-    res += '[';
-    for(auto  child : value_.get()){
-        res += (child)->serialize();
-        res += ',';
-    }
-    if(res[res.size() - 1] == ',')res.erase(res.size() - 1 , 1);
-
-    res += ']';
-    return res;
+template< typename token_policy ,
+          typename buffer_policy >
+class json_array_impl{
     
-}
+    public:
 
-jsonArray & jsonArray::clear(){
-    value_.clear();
-    return *this;
-}
+        using tokenizer_type = token_policy;
+        using value_type    = std::vector<variants> ;
+        using buffer_type = buffer_policy;
+        using token_type  = token_policy::token_type;
+        using token_handler  = token_policy::token_handler;
+        
+        using iterator = Iterator<json_array_impl , variants> *;
+        
+        friend class Iterator<json_array_impl , variants> ;
 
-jsonArray & jsonArray::push(basic_json & v){
-    value_.push_back(std::shared_ptr<basic_json>(&v));
-    return *this;
-}
+        json_array_impl(tokenizer_type * tokenizer) {
+            parse(tokenizer);
+        }
+
+        json_array_impl(buffer_type * buffer) {
+            tokenizer_type * tokenizer(buffer->data + buffer->head);
+            parse(tokenizer);
+        }
+
+        json_array_impl * parse(tokenizer_type * tokenizer){
+            assert(tokenizer->getNext()->compare('['));
+            ++(*tokenizer);
+            while(tokenizer->hasNext()){
+                if(tokenizer->peek_next_char() == ']'){
+                    tokenizer->get_next_char();
+                    break;
+                }
+                token_type * nextToken = tokenizer->getNext();
+                storage_.push_back(nextToken->cb(tokenizer));
+            }
+            return this;
+        }
+
+        iterator begin(){
+            return new iterator(this);
+        }
+        
+        value_type & get(){
+            return storage_;
+        }
+
+        ssize_t size(){
+            return storage_.size();
+        }
+
+    private:
+        value_type storage_;
+        tokenizer_type * tokenizer_;
+};
+
+
 #endif
