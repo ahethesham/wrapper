@@ -1,1 +1,48 @@
-make: 'config_mock' is up to date.
+g++ -std=c++23  /home/ahethesham/agent/test/../test/server.cc -I/home/ahethesham/agent/test/../include/Logger/ -I/home/ahethesham/agent/test/../include/config/ -I/home/ahethesham/agent/test/../include/json/ -I/home/ahethesham/agent/test/../include/stream/ -I/home/ahethesham/agent/test/../include/web/ -I/home/ahethesham/agent/test/../include/web/acceptor/ -I/home/ahethesham/agent/test/../include/web/binder/ -I/home/ahethesham/agent/test/../include/web/client/ -I/home/ahethesham/agent/test/../include/web/connector/ -I/home/ahethesham/agent/test/../include/web/endpoint/ -I/home/ahethesham/agent/test/../include/web/listener/ -I/home/ahethesham/agent/test/../include/web/request/ -I/home/ahethesham/agent/test/../include/web/request/http/ -I/home/ahethesham/agent/test/../include/web/response/ -I/home/ahethesham/agent/test/../include/web/server/ -I/home/ahethesham/agent/test/../include/web/socket/ -I/usr/include/ -L/usr/lib/x86_64-linux-gnu -lssl -lcrypto -o server 
+In file included from /home/ahethesham/agent/test/../include/json/json_object.h:4,
+                 from /home/ahethesham/agent/test/../include/json/json_fwd.h:101,
+                 from /home/ahethesham/agent/test/../include/json/json_array.h:4,
+                 from /home/ahethesham/agent/test/../include/json/json_fwd.h:100,
+                 from /home/ahethesham/agent/test/../include/web/request/http/http_request_fwd.h:4,
+                 from /home/ahethesham/agent/test/../include/web/web.h:5,
+                 from /home/ahethesham/agent/test/../test/server.cc:1:
+/home/ahethesham/agent/test/../include/json/json.h: In function ‘T* json_builder(char*)’:
+/home/ahethesham/agent/test/../include/json/json.h:8:38: error: cannot convert ‘<unresolved overloaded function type>’ to ‘basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >::token_handler’ {aka ‘std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>’}
+    8 |     tokenizer->register_token_handler('{' , basic_json_interface::build<json_object> );
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ahethesham/agent/test/../include/json/json_fwd.h:103,
+                 from /home/ahethesham/agent/test/../include/json/json_primitves.h:4,
+                 from /home/ahethesham/agent/test/../include/json/json_fwd.h:102,
+                 from /home/ahethesham/agent/test/../include/json/json.h:3:
+/home/ahethesham/agent/test/../include/json/token.h:73:81: note:   initializing argument 2 of ‘basic_tokenizer<impl>& basic_tokenizer<impl>::register_token_handler(char, token_handler) [with impl = tokenizer_impl<token_v2, json_grammer, buffer_v1>; token_handler = std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>]’
+   73 |         basic_tokenizer & register_token_handler(char character , token_handler cb){
+      |                                                                   ~~~~~~~~~~~~~~^~
+/home/ahethesham/agent/test/../include/json/json.h:9:38: error: cannot convert ‘<unresolved overloaded function type>’ to ‘basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >::token_handler’ {aka ‘std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>’}
+    9 |     tokenizer->register_token_handler('[' , basic_json_interface::build<json_array>  );
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ahethesham/agent/test/../include/json/token.h:73:81: note:   initializing argument 2 of ‘basic_tokenizer<impl>& basic_tokenizer<impl>::register_token_handler(char, token_handler) [with impl = tokenizer_impl<token_v2, json_grammer, buffer_v1>; token_handler = std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>]’
+   73 |         basic_tokenizer & register_token_handler(char character , token_handler cb){
+      |                                                                   ~~~~~~~~~~~~~~^~
+/home/ahethesham/agent/test/../include/json/json.h: In function ‘tokenizer_type* tokenizer_builder(buffer_type*)’:
+/home/ahethesham/agent/test/../include/json/json.h:27:38: error: cannot convert ‘<unresolved overloaded function type>’ to ‘basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >::token_handler’ {aka ‘std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>’}
+   27 |     tokenizer->register_token_handler('{' , basic_json_interface::build<json_object> );
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ahethesham/agent/test/../include/json/token.h:73:81: note:   initializing argument 2 of ‘basic_tokenizer<impl>& basic_tokenizer<impl>::register_token_handler(char, token_handler) [with impl = tokenizer_impl<token_v2, json_grammer, buffer_v1>; token_handler = std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>]’
+   73 |         basic_tokenizer & register_token_handler(char character , token_handler cb){
+      |                                                                   ~~~~~~~~~~~~~~^~
+/home/ahethesham/agent/test/../include/json/json.h:28:38: error: cannot convert ‘<unresolved overloaded function type>’ to ‘basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >::token_handler’ {aka ‘std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>’}
+   28 |     tokenizer->register_token_handler('[' , basic_json_interface::build<json_array>  );
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ahethesham/agent/test/../include/json/token.h:73:81: note:   initializing argument 2 of ‘basic_tokenizer<impl>& basic_tokenizer<impl>::register_token_handler(char, token_handler) [with impl = tokenizer_impl<token_v2, json_grammer, buffer_v1>; token_handler = std::function<json_primitive_interface<basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >, buffer_v1>*(basic_tokenizer<tokenizer_impl<token_v2, json_grammer, buffer_v1> >*)>]’
+   73 |         basic_tokenizer & register_token_handler(char character , token_handler cb){
+      |                                                                   ~~~~~~~~~~~~~~^~
+In file included from /home/ahethesham/agent/test/../include/web/request/http/http_request_fwd.h:60,
+                 from /home/ahethesham/agent/test/../include/web/request/basic_status_line.h:5,
+                 from /home/ahethesham/agent/test/../include/web/request/http/http_request_fwd.h:59:
+/home/ahethesham/agent/test/../include/web/request/basic_headers.h: In member function ‘bool http_1_0_headers_impl<buffer_Policy, status_line_policy>::process_headers(buffer_type*) [with buffer_type = buffer_v1; status_line_policy = basic_request_line<requestLine_1_0<> >]’:
+/home/ahethesham/agent/test/../include/web/request/basic_headers.h:103:9: warning: control reaches end of non-void function [-Wreturn-type]
+  103 |         }
+      |         ^
+/home/ahethesham/agent/test/../include/web/request/basic_headers.h: In member function ‘bool http_1_0_headers_impl<buffer_Policy, status_line_policy>::process_headers(buffer_type*) [with buffer_type = buffer_v1; status_line_policy = basic_status_line<statusLine_1_0<> >]’:
+/home/ahethesham/agent/test/../include/web/request/basic_headers.h:103:9: warning: control reaches end of non-void function [-Wreturn-type]
+make: *** [makefile:13: server] Error 1

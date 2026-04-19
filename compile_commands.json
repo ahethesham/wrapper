@@ -1,32 +1,206 @@
 [
 	{
-		"directory": "/home/ahethesham/agent/test",
-		"command": "g++ -std=c++23 -I/home/ahethesham/agent/samples -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/Logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/web -o stub.o -c stub.cc",
-		"file": "stub.cc"
+		"directory": "/home/ahethesham/agent/include/config/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock.o -c mock.cc",
+		"file": "mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/config/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o ini_config_parser.o -c ini_config_parser.cc",
+		"file": "ini_config_parser.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/config/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o ini_container.o -c ini_container.cc",
+		"file": "ini_container.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/token/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_tokenizer_v1.o -c json_tokenizer_v1.cc",
+		"file": "json_tokenizer_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/token/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o token_v1.o -c token_v1.cc",
+		"file": "token_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/token/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_grammer_v1.o -c json_grammer_v1.cc",
+		"file": "json_grammer_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/web/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock_client.o -c mock_client.cc",
+		"file": "mock_client.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/web/request/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_request_line_v1.o -c http_request_line_v1.cc",
+		"file": "http_request_line_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/web/request/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_request_v1.o -c http_request_v1.cc",
+		"file": "http_request_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/web/request/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_headers_v1.o -c http_headers_v1.cc",
+		"file": "http_headers_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_mock.o -c json_mock.cc",
+		"file": "json_mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_null_v1.o -c json_null_v1.cc",
+		"file": "json_null_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_object_v1.o -c json_object_v1.cc",
+		"file": "json_object_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_integer_v1.o -c json_integer_v1.cc",
+		"file": "json_integer_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_array_v1.o -c json_array_v1.cc",
+		"file": "json_array_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_boolean_v1.o -c json_boolean_v1.cc",
+		"file": "json_boolean_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/json/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_string_v1.o -c json_string_v1.cc",
+		"file": "json_string_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/formatter/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o json_formatter_v1.o -c json_formatter_v1.cc",
+		"file": "json_formatter_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/logger/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock.o -c mock.cc",
+		"file": "mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/logger/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o file_logger_v1.o -c file_logger_v1.cc",
+		"file": "file_logger_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock.o -c mock.cc",
+		"file": "mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o socket_io_handle.o -c socket_io_handle.cc",
+		"file": "socket_io_handle.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_reader_v1.o -c http_reader_v1.cc",
+		"file": "http_reader_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o file_reader_v1.o -c file_reader_v1.cc",
+		"file": "file_reader_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o file_writer_v1.o -c file_writer_v1.cc",
+		"file": "file_writer_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_writer_v1.o -c http_writer_v1.cc",
+		"file": "http_writer_v1.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o file_io_handle.o -c file_io_handle.cc",
+		"file": "file_io_handle.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/stream/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock.o -c mock.cc",
+		"file": "mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/builder/http/tests",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o mock.o -c mock.cc",
+		"file": "mock.cc"
+	},
+
+	{
+		"directory": "/home/ahethesham/agent/include/builder/http/impl",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o http_request_builder_v1.o -c http_request_builder_v1.cc",
+		"file": "http_request_builder_v1.cc"
 	},
 
 	{
 		"directory": "/home/ahethesham/agent/test",
-		"command": "g++ -std=c++23 -I/home/ahethesham/agent/samples -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/Logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/web -o server.o -c server.cc",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o server.o -c server.cc",
 		"file": "server.cc"
 	},
 
 	{
 		"directory": "/home/ahethesham/agent/test",
-		"command": "g++ -std=c++23 -I/home/ahethesham/agent/samples -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/Logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/web -o request_mock.o -c request_mock.cc",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o request_mock.o -c request_mock.cc",
 		"file": "request_mock.cc"
 	},
 
 	{
 		"directory": "/home/ahethesham/agent/test",
-		"command": "g++ -std=c++23 -I/home/ahethesham/agent/samples -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/Logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/web -o json_mock.o -c json_mock.cc",
-		"file": "json_mock.cc"
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o config_mock.o -c config_mock.cc",
+		"file": "config_mock.cc"
 	},
 
 	{
-		"directory": "/home/ahethesham/agent",
-		"command": "g++ -std=c++23 -I/home/ahethesham/agent/samples -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/Logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/web -o main.o -c main.cc",
-		"file": "main.cc"
+		"directory": "/home/ahethesham/agent/test",
+		"command": "g++ -std=c++23  -I/home/ahethesham/agent/include/config -I/home/ahethesham/agent/include/token -I/home/ahethesham/agent/include/web/server -I/home/ahethesham/agent/include/web/response -I/home/ahethesham/agent/include/web -I/home/ahethesham/agent/include/web/endpoint -I/home/ahethesham/agent/include/web/client -I/home/ahethesham/agent/include/web/connector -I/home/ahethesham/agent/include/web/acceptor -I/home/ahethesham/agent/include/web/binder -I/home/ahethesham/agent/include/web/socket -I/home/ahethesham/agent/include/web/listener -I/home/ahethesham/agent/include/web/request -I/home/ahethesham/agent/include/web/request/http -I/home/ahethesham/agent/include/json -I/home/ahethesham/agent/include/formatter -I/home/ahethesham/agent/include/logger -I/home/ahethesham/agent/include/stream -I/home/ahethesham/agent/include/stream/io_handle -I/home/ahethesham/agent/include/builder/http -I/usr/include/openssl -o logger_mock.o -c logger_mock.cc",
+		"file": "logger_mock.cc"
 	},
 
 

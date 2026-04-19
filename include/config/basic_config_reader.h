@@ -2,10 +2,12 @@
 #define __BASIC_CONFIG_READER_H__
 
 #include <functional>
-#include "logger.h"
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <assert.h>
+
+
 template<typename impl>
 class basic_config_parser {
     
@@ -31,6 +33,12 @@ class basic_config_parser {
             return (*impl_)[key];
         }
 
+        basic_config_parser & at_eof(){
+            impl_->at_eof();
+            return *this;
+
+        }
+
         
     private:
         impl * impl_;
@@ -42,7 +50,7 @@ template<typename container_impl>
 class ini_parser_impl{
     public:
         using buffer_type = container_impl::buffer_type;
-        using value_type  = container_impl ;
+        using value_type  = container_impl & ;
         using parent_type = container_impl::parent_type;
         using container_type = std::map<parent_type , container_impl *>;
         using key_type    = parent_type ;
@@ -83,6 +91,12 @@ class ini_parser_impl{
 
         value_type  operator[](key_type key){
             return *containers_[key];
+        }
+
+        ini_parser_impl & at_eof(){
+            if(impl_)
+                containers_[impl_->get_id()] = impl_;
+            return *this;
         }
 
     private:
@@ -198,7 +212,7 @@ class ini_config_container_impl {
             return children_;
         }
         
-        value_type  operator[](key_type key){
+        value_type &  operator[](key_type key){
             auto itr = children_.find(key);
             if(itr == children_.end())
                 throw std::runtime_error("Key Not found");

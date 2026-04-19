@@ -1,6 +1,7 @@
 #ifndef __LISTENER_H__
 #define __LISTENER_H__
 
+#include <cassert>
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdlib.h>

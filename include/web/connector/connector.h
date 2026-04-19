@@ -88,7 +88,7 @@ class  tcp_ssl_connector  : public tcp_connector<typename socketPolicy::base_soc
         tcp_ssl_connector() : tcp_connector<typename socket_type::base_socket_type , endpoint_type>(){}
         int connect(socket_type &socket , struct addrinfo * address){
             if(tcp_connector<typename socket_type::base_socket_type , endpoint_type>::connect(socket.getBaseTcpSocket() , address) == 0){
-                log("doing a ssl connect");
+                //log("doing a ssl connect");
                 assert(SSL_connect(socket.get()) == 1);
                 return 0;
             }

@@ -1,7 +1,18 @@
+#include "ini_config_parser.h"
+#include "file_io_handle.h"
+#include "file_reader_v1.h"
+#include "file_logger_v1.h"
+#include "basic_logger_interface.h"
 #include "web.h"
-#include "json.h"
 
-int main(){
+int main(int argc , char * argv[]){
+    
+    Config & cfg = *new Config(new file_reader(new file_io_handle<READ_ONLY>(argv[1])));
+    Logger & logger = Logger::build((const char *)cfg["Logging"]["file_path"].c_str());
+
+    gLogger = &logger;
+
+    logger << "Testing server " << endl;
     
 #if 0
     http_server server(*(new tcp_endpoint(8080 , std::string("localhost"))  ));
@@ -33,9 +44,9 @@ int main(){
 #if 1
     https_client client(443 , "generativelanguage.googleapis.com");
 #endif
+    logger.log("Starting the json buildup");
     http_request request;
-    http_1_0_request_line line;
-
+    
 
     request.requestLine().uri() = "/v1beta/models/gemini-3-flash-preview:generateContent";
     request.requestLine().method() = "POST";
@@ -49,28 +60,28 @@ int main(){
     headers["Accept"] = "*/*";
 
     
-    jsonObject req ;
-    jsonObject inner1 , inner2;
-    inner1.push("text" , std::make_shared<jsonString>("reply to this request with a hello "));
-    jsonArray array1 , array2;
-    array1.push(std::make_shared<jsonObject>(inner1));
-    req.push("parts" , std::make_shared<jsonArray>(array1));
+    json_object req ;
+    json_object inner1 , inner2;
+    inner1.push("text" , new json_string(std::string("reply to this request with a hello ")));
+    json_array array1 , array2;
+    array1.push((json_object*)&inner1);
+    req.push("parts" , (json_array *)&array1);
 
-    array2.push(req);
-    inner2.push("contents" , array2);
+    array2.push((json_object *) &req);
+    inner2.push("contents" , (json_array *)&array2);
     headers["Content-Length"] = std::to_string(inner2.serialize().size());
     headers["User-agent"] = "testing";
     headers["Host"] = "generativelanguage.googleapis.com";
-    request.body() = inner2.get();
-    log("sending request with headers %s " , request.serialize().c_str());
+    request.body().get() = inner2.get();
     
+    logger << "request \n " << request.serialize() << endl; 
 #if 1
     auto response = client.send(request);
 
-    log("response received %s ", response.body().serialize().c_str());
+    //log("response received %s ", response.body().serialize().c_str());
 #endif
 #endif
-    log("Shutting Down Bye ");
+    logger.log("Shutting Down Bye ");
     exit( 0);
 
 }

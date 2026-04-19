@@ -1,10 +1,18 @@
 #ifndef __WEB_H__
 #define __WEB_H__
 
-#include "connector.h"
-#include "stream.h"
+#include "http_request_fwd.h"
+#include "http_reader_v1.h"
 #include "stream_fwd.h"
+#include "client.h"
 #include "web_fwd.h"
+
+
+using http_1_0_server_reader = http_reader;
+using http_1_0_server_writer = http_writer;
+using https_1_0_client_reader = http_reader;
+using https_1_0_client_writer = http_writer;
+
 
 
 
@@ -25,7 +33,7 @@ using http_client =  basic_client< tcp_socket ,
                       http_request ,
                       http_response ,
                       BaseClient > ;
-#else
+#elif 0
 
 using http_client =  basic_client< tcp_socket ,
                       tcp_endpoint ,
@@ -49,7 +57,8 @@ using https_client = basic_client<tcp_ssl_socket ,
 using https_client = basic_client<tcp_ssl_socket ,
                         tcp_endpoint ,
                         basic_connector<tcp_ssl_connector< tcp_ssl_socket , tcp_endpoint > > ,
-                        https_client_stream ,
+                        https_reader ,
+                        https_writer ,
                         http_request ,
                         http_response ,
                         BaseClient> ;

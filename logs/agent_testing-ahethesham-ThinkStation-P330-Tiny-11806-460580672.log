@@ -1,0 +1,16 @@
+2026:04:12 11:39:36|ahethesham-ThinkStation-P330-Tiny||133062842378048|INFO| json mocking started ...
+2026:04:12 11:39:36|ahethesham-ThinkStation-P330-Tiny||133062842378048|INFO| Theme in prefereneces is dark
+
+2026:04:12 11:39:36|ahethesham-ThinkStation-P330-Tiny||133062842378048|INFO| 
+{
+	"contents": [
+		{
+			"parts": [
+				{
+					"text": "Reply me with a hello bro "
+				}
+			]
+		}
+	]
+}
+

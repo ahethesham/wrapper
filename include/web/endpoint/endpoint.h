@@ -1,6 +1,8 @@
 #ifndef __ENDPOINT_H__
 #define __ENDPOINT_H__
 
+#include <cstring>
+#include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -31,7 +33,7 @@ class basic_endpoint {
 
         bool resolve(){
             struct addrinfo hint;
-            memset(&hint , 0x00 , sizeof(hint));
+            ::memset(&hint , 0x00 , sizeof(hint));
             hint.ai_family = endpoint::IP_TYPE ; 
             hint.ai_socktype = endpoint::SOCK_TYPE;
             hint.ai_flags = endpoint::AI_FLAGS;

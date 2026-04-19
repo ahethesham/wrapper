@@ -21,9 +21,9 @@ class basic_acceptor{
             sockaddr_type * clientaddr = new sockaddr_type();
             memset(clientaddr , 0 ,sizeof(sockaddr) );
             socklen_t len = 0;
-            log("Ready to accept requests");
+            //log("Ready to accept requests");
             int newClient = ::accept(socketFd_ , (struct sockaddr *)clientaddr , &len);
-            log("accepted new client");
+            //log("accepted new client");
             return socket_type(newClient , *clientaddr);
         }
 };

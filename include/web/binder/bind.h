@@ -21,14 +21,12 @@ class basic_binder{
     public:
         basic_binder(socket_type &  socket , endpoint_type & endpoint){
             auto itr = endpoint.iterator();
-            log("received iterator ");
             while(itr.hasNext()){
                 auto currentAddress = itr.getNext();
                 if(::bind(socket.get() , currentAddress->ai_addr , currentAddress->ai_addrlen) == 0){
                     /*
                      * Bind is successfull return now
                      */
-                    log("Bind is successfull ");
                     return ;
                 }
             }

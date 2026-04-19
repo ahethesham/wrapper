@@ -14,6 +14,14 @@ struct buffer_v1{
         memset(data , 0 , sizeof(data));
         head = tail = remainingBytes = 0 ;
     }
+    char * get_data();
+    int &  get_tail();
+    int &  get_head();
+    bool continue_reading(){return false;}
+    buffer_v1 & parse(const char * data) {return * this;}
+    buffer_v1 & parse(buffer_v1 * buffer){return *this;}
+    buffer_v1 & at_eof(){return * this;}
+    buffer_v1 * buffer(){return this;}
 };
 
 #endif

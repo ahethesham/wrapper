@@ -41,11 +41,17 @@ template< typename status_line_policy = http_1_0_request_line ,
           typename buffer_Policy = buffer_v1>
 class basic_http_request;
 
+template< typename status_line_policy = http_1_0_status_line ,
+          typename header_policy =  http_1_0_request_headers,
+          typename body_policy = json_object ,
+          typename buffer_Policy = buffer_v1>
+class basic_http_response;
+
 
 
 using http_request = basic_http_request< http_1_0_request_line , http_1_0_request_headers , json_object  > ;
 
-using  http_response = basic_http_request< http_1_0_status_line , http_1_0_response_headers , json_object >;
+using  http_response = basic_http_response< http_1_0_status_line , http_1_0_response_headers , json_object >;
 
 #endif
 
@@ -53,3 +59,4 @@ using  http_response = basic_http_request< http_1_0_status_line , http_1_0_respo
 #include "basic_status_line.h"
 #include "basic_headers.h"
 #include "basic_http_request.h"
+#include "basic_http_response.h"

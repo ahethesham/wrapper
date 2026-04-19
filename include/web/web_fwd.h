@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "openssl/ssl.h"
 #include "json_fwd.h"
-#include "stream_fwd.h"
 
 template<typename socket>
 class basic_acceptor;
@@ -80,17 +79,14 @@ class basic_client ;
 
 #endif
 
-#include "http_reader.h"
-#include "http_writer.h"
 #include "server.h"
 #include "socket.h"
 #include "tcp_socket.h"
 #include "bind.h"
 #include "endpoint.h"
 #include "listener.h"
-#include "stream.h"
 #include "client.h"
 #include "buffer.h"
 #include "http_server.h"
 #include "http_request_fwd.h"
-#include "http_client.h"
+#include "connector.h"
