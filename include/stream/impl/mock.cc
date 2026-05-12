@@ -1,5 +1,4 @@
 #include "file_io_handle.h"
-#include "stream_fwd.h"
 #include "file_writer_v1.h"
 
 using file_writer = file_writer_v1;

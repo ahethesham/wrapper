@@ -1,52 +1,79 @@
+ifndef __STREAM_MAKEFILE__
+__STREAM_MAKEFILE__:=1
 
-HOME ?= $(shell find ~ -type d -name agent | head -n 1)
+#since this is a L0 module ...any object from this module should not depend on any objects above level
+
+HOME = $(shell find ~ -type d -name agent | head -n 1)
+CFLAGS ?= -Wall -Wextra -MMD -MP
 
 FILE_IO_HANDLE=${HOME}/include/stream/build/file_io_handle.o
 FILE_READER=${HOME}/include/stream/build/file_reader_v1.o
 FILE_WRITER=${HOME}/include/stream/build/file_writer_v1.o
 HTTP_READER=${HOME}/include/stream/build/http_reader_v1.o
+HTTP_WRITER=${HOME}/include/stream/build/http_writer_v1.o
 SOCKET_IO_HANDLE=${HOME}/include/stream/build/socket_io_handle.o
 
-STREAM_LIB=${HOME}/include/stream/libs/libstream.so
+STREAM_MOCK_OBJ := $(HOME)/include/stream/tests/mock.o
+STREAM_BIN_FILE := $(HOME)/include/stream/bin/mock
+STREAM_MOCK_FILE := $(HOME)/include/stream/tests/mock.cc
 
-OBJS=${FILE_IO_HANDLE} \
+STREAM_LIB=${HOME}/include/stream/libs/libstream.so
+FILE_IO_LIB=${HOME}/include/stream/libs/libfile_io.so
+SOCKET_IO_LIB=${HOME}/include/stream/libs/libsocket_io.so
+IO_HANDLE_LIB := ${HOME}/include/stream/libs/libio_handle.so
+
+STREAM_ALL_OBJS=${FILE_IO_HANDLE} \
 	${FILE_READER} \
 	${FILE_WRITER} \
 	${HTTP_READER}  \
+	$(HTTP_WRITER) \
 	${SOCKET_IO_HANDLE}
 
+STREAM_DEP := $(STREAM_ALL_OBJS:.o=.d) $(STREAM_MOCK_OBJ:.o=.d)
+
+IO_HANDLE_OBJS := ${FILE_IO_HANDLE} \
+				  ${SOCKET_IO_HANDLE}
 
 INCLUDES ?= $(addprefix -I,$(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ))
 
-#LINKERS=-L/usr/lib/x86_64-linux-gnu -lssl -lcrypto
-stream_all: ${OBJS}
+stream_all: stream_app
+	echo "compiled and generated ${STREAM_LIB} successfully "
+
+io_handle_all: ${IO_HANDLE_OBJS}
+	${CXX} -std=c++23 --shared $^ ${LINKERS} -o ${IO_HANDLE_LIB}
+	echo "compiled and generated ${IO_HANDLE_LIB} successfully"
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/stream/libs/ -lio_handle)
+
+# core target responsible for generating libstream.so
+stream_app: ${STREAM_ALL_OBJS}
 	${CXX} -std=c++23 --shared -fPIC $^ -o ${STREAM_LIB} 
-
-
-mock_http_reader: ${HOME}/include/stream/build/http_reader_v1.o ${TEST_OBJ}
-	${CXX} -std=c++23 $^ ${INCLUDES} -o ${HOME}/include/stream/build/http_reader_v1 
-	
-mock_file_reader: ${HOME}/include/stream/build/file_reader_v1.o ${HOME}/include/stream/build/file_io_handle.o ${TEST_MAIN}
-	${CXX} -std=c++23 --shared ${HOME}/include/stream/build/file_reader_v1.o ${HOME}/include/stream/build/file_io_handle.o  -o ${HOME}/include/stream/libs/libfile_reader.so
-	${CXX} -std=c++23  ${TEST_MAIN} ${INCLUDES} -L${HOME}/include/stream/libs/ -lfile_reader   -o ${HOME}/include/stream/bin/file_reader_v1
-
-mock_file_io_handle: ${HOME}/include/stream/build/file_io_handle.o 
-
-file_reader: ${HOME}/include/stream/build/file_reader_v1.o ${HOME}/include/stream/build/file_io_handle.o
-	${CXX} -std=c++23 --shared $^ -o ${HOME}/include/stream/libs/libfile_reader.so
-
-
-file_writer: ${HOME}/include/stream/build/file_io_handle.o  ${HOME}/include/stream/build/file_writer_v1.o
-	${CXX} -std=c++23 -fPIC --shared $^ -o ${HOME}/include/stream/libs/libfile_writer.so
-
-mock_file_writer: ${HOME}/include/stream/build/file_io_handle.o ${HOME}/include/stream/build/file_writer_v1.o  ${HOME}/include/stream/build/mock.o
-	${CXX} -std=c++23 $^ -o ${HOME}/include/stream/bin/mock
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/stream/libs/ -lstream -L/usr/lib/x86_64-linux-gnu/ -lssl -lcrypto )
 
 ${HOME}/include/stream/build/%.o: ${HOME}/include/stream/impl/%.cc 
-	${CXX} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+	${CXX} $(CFLAGS) -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
 
+stream_mock: $(STREAM_MOCK_OBJ) stream_app
+	$(CXX) -std=c++23 -fPIC $< $(LINKERS) -o $(STREAM_BIN_FILE)
 
-clean:
+$(STREAM_MOCK_OBJ): $(STREAM_MOCK_FILE)
+	${CXX} $(CFLAGS) -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+#--------------------------------------------------------------
+# for users who specifically need a file_writer and file_reader
+file_io_all: ${FILE_READER} ${FILE_WRITER} ${FILE_IO_HANDLE}
+	${CXX} -std=c++23 --shared -fPIC $^ ${LINKERS} ${INCLUDES} -o ${FILE_IO_LIB}
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/stream/libs/ -lfile_io)
+
+socket_io_all: ${HTTP_READER} ${HTTP_WRITER} ${SOCKET_IO_HANDLE}
+	${CXX} -std=c++23 --shared -fPIC $^ ${LINKERS} ${INCLUDES} -o ${SOCKET_IO_LIB}
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/stream/libs/ -lsocket_io)
+
+-include $(STREAM_DEP)
+
+stream_clean:
 	if [ $$(ls ./libs/ | wc -l ) -gt 0 ]; then rm ./libs/* ; fi
 	if [ $$(ls ./build/ | wc -l ) -gt 0 ]; then rm ./build/* ; fi
 	if [ $$(ls ./bin/ | wc -l ) -gt 0 ]; then rm ./bin/* ; fi
+	if [ $$(ls ./tests/*.o | wc -l ) -gt 0 ]; then rm ./tests/*.o ; fi
+
+
+endif

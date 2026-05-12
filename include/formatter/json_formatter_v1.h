@@ -11,6 +11,9 @@ class json_formatter_v1 : public basic_formatter_interface{
 
         json_formatter_v1 & increment_tab_count() override;
         json_formatter_v1 & decrement_tab_count() override;
+
+        json_formatter_v1 & header_post_processor(std::string & res) override;
+        json_formatter_v1 & body_post_processor(std::string & res) override;
     private:
         int tab_count_;
 };

@@ -1,5 +1,4 @@
 #include "file_writer_v1.h"
-#include "stream_fwd.h"
 #include <stdexcept>
 
 using io_handle_type = file_writer_v1::io_handle_type;
@@ -17,7 +16,7 @@ size_type file_writer_v1::write(void * buffer , ssize_t size) {
     int remaining_bytes = size;
     int rc;
     while(remaining_bytes > 0 && !handle_->is_closed()){
-        rc = std_file_writer( handle_->get() , (void *)((char *)buffer + current_idx) , remaining_bytes);
+        rc = detail::std_file_writer( handle_->get() , ((char *)buffer + current_idx) , remaining_bytes , [](int rc ){return rc ;});
         if(rc == 0){
             handle_->close();
             throw std::runtime_error("Unable to write data  to  file fd closed");
@@ -28,6 +27,10 @@ size_type file_writer_v1::write(void * buffer , ssize_t size) {
         current_idx += rc;
     }
     return  current_idx;
+}
+
+size_type file_writer_v1::write(parser_type & parser){
+    return write(parser.buffer());
 }
 
 size_type file_writer_v1::write(buffer_type * buffer) {

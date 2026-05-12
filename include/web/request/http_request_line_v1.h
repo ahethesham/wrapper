@@ -5,8 +5,7 @@
 #include "buffer.h"
 #include <vector>
 
-class http_request_line_v1 : public basic_http_request_line_interface ,
-                            public basic_parser_interface<buffer_v1>{
+class http_request_line_v1 : public basic_http_request_line_interface  {
     public:
         http_request_line_v1() ;
 
@@ -18,18 +17,11 @@ class http_request_line_v1 : public basic_http_request_line_interface ,
         self_type & set_version(std::string version) override;
         self_type & set_query_param(std::string key , std::string value) override;
         self_type & set_query_param(std::vector<std::pair<std::string , std::string > > & params);
-        const std::string & get_method() override;
-        const std::string  & get_uri() override;
-        const std::string & get_version() override;
+        std::string & get_method() override;
+        std::string  & get_uri() override;
+        std::string & get_version() override;
 
-        const std::string &get_query_param(std::string key) override;
-
-        //copy and move constructors
-        http_request_line_v1(http_request_line_v1 &req);
-        http_request_line_v1(http_request_line_v1 &&req);
-        //copy and move assignment 
-        self_type & operator=(http_request_line_v1 &req);
-        self_type & operator=(http_request_line_v1 &&req);
+        std::string &get_query_param(std::string key) override;
 
         // parser interface implementation
         void at_eof(buffer_v1 * buffer) override;
@@ -38,6 +30,15 @@ class http_request_line_v1 : public basic_http_request_line_interface ,
         buffer_v1 * buffer() override;
 
         std::string serialize(basic_formatter_interface & formatter) override;
+
+        //copy and move constructors
+        http_request_line_v1(http_request_line_v1 &req);
+        http_request_line_v1(http_request_line_v1 &&req);
+        //copy and move assignment 
+        self_type & operator=(http_request_line_v1 &req);
+        self_type & operator=(http_request_line_v1 &&req);
+        // clone
+        std::shared_ptr<basic_http_request_line_interface> clone() override;
 
 
     private:

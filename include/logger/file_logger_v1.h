@@ -5,12 +5,20 @@
 #include <memory>
 #include <string>
 #include "file_io_handle.h"
+#include "file_writer_v1.h"
 #include "basic_logger_interface.h"
-#include "stream_fwd.h"
 
 typedef     file_io_handle<WRITE> log_file_handle;
 typedef     file_writer           log_writer;
 
+ enum  LogLevel{
+    LOG_FATAL ,
+    LOG_CRITICAL ,
+    LOG_ERROR ,
+    LOG_WARN ,
+    LOG_INFO ,
+    LOG_DEBUG 
+};
 
 template<typename io_handle_policy =  log_file_handle ,
          typename buffer_policy = buffer_v1 ,
@@ -27,6 +35,9 @@ class file_logger_v1 : public basic_logger_interface{
 
         /* to make sure we have only one file per process ...and multiple per thread */
         static file_logger_v1 & build(const char * f_path = nullptr);
+        template<LogLevel level>
+        static file_logger_v1 & instance();
+        int log_level();
         file_logger_v1(io_handle_type & handle);
         file_logger_v1(io_handle_type & handle , writer_type & writer);
         file_logger_v1 & log(const char * fmt , ...) override; 
@@ -43,10 +54,12 @@ class file_logger_v1 : public basic_logger_interface{
         buffer_type * buffer_;
         io_handle_type * handle_;
         writer_type * writer_;
+        LogLevel log_level_;
 };
 
 
 using Logger = file_logger_v1< log_file_handle , buffer_v1 , log_writer>;
+
 
 
 inline basic_logger_interface & endl(basic_logger_interface & os){
@@ -54,5 +67,30 @@ inline basic_logger_interface & endl(basic_logger_interface & os){
 }
 
 extern Logger * gLogger;
+
+
+#define LOG_INFO \
+    if(Logger::build().log_level() <= LogLevel::LOG_INFO) \
+    Logger::instance<LOG_INFO>()
+
+#define LOG_ERROR \
+    if(Logger::build().log_level() <= LogLevel::LOG_DEBUG) \
+    Logger::instance<LOG_DEBUG>()
+
+#define LOG_WARN \
+    if(Logger::build().log_level() <= LogLevel::LOG_WARN) \
+    Logger::instance<LOG_WARN>()
+
+#define LOG_CRITICAL \
+    if(Logger::build().log_level() <= LogLevel::LOG_CRITICAL) \
+    Logger::instance<LOG_CRITICAL>()
+
+#define LOG_DEBUG \
+    if(Logger::build().log_level() <= LogLevel::LOG_DEBUG) \
+    Logger::instance<LOG_DEBUG>()
+
+#define LOG_FATAL \
+    if(Logger::build().log_level() <= LogLevel::LOG_FATAL) \
+    Logger::instance<LOG_FATAL>()
 
 #endif

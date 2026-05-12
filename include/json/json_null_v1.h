@@ -5,7 +5,7 @@
 class json_null_v1 : public basic_object_interface{
 
     public:
-        json_null_v1(basic_json_tokenizer_interface & tokenizer) ;
+        json_null_v1(json_tokenizer & tokenizer) ;
         json_null_v1();
         json_null_v1(json_null_v1 & obj);
         json_null_v1(json_null_v1 && obj);
@@ -21,9 +21,20 @@ class json_null_v1 : public basic_object_interface{
 
         std::string serialize() override;
         std::string serialize(basic_formatter_interface & formatter) override;
-        std::unique_ptr<basic_object_interface> clone() override;
+        std::shared_ptr<basic_object_interface> clone() override;
 
-        void parse(basic_json_tokenizer_interface & tokenizer) override;
+        void parse(json_tokenizer & tokenizer) override;
+
+
+        std::string get_body_type() override;
+
+        //parse methods 
+        buffer_type * buffer() override;
+        void parse(buffer_type * buffer) override;
+        void at_eof(buffer_type * buffer) override;
+        bool continue_reading( )override;
+
+        json_null_v1 & clear() override;
     private:
         std::string *value_;
 };

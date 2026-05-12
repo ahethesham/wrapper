@@ -1,9 +1,10 @@
 
 #include "json_string_v1.h"
-#include "basic_json_tokenizer_interface.h"
+#include "basic_object_interface.h"
 #include "file_logger_v1.h"
+#include "json_builder.h"
 
-json_string_v1::json_string_v1(basic_json_tokenizer_interface & tokenizer) : value_(new std::string()){
+json_string_v1::json_string_v1(json_tokenizer & tokenizer) : value_(new std::string()){
     parse(tokenizer);
 }
 
@@ -27,9 +28,9 @@ std::string json_string_v1::serialize(basic_formatter_interface & formatter){
     return std::string("\"" + *value_ + "\"");
 }
 
-void json_string_v1::parse(basic_json_tokenizer_interface & tokenizer){
+void json_string_v1::parse(json_tokenizer & tokenizer){
     auto token = tokenizer.getNext();
-    assert(token->compare('\"'));
+    assert(token->compare('\"') && value_ != nullptr);
     //++(tokenizer);
     char ch;
     do{
@@ -46,11 +47,9 @@ void json_string_v1::parse(basic_json_tokenizer_interface & tokenizer){
  */
 json_string_v1 & json_string_v1::operator=(json_string_v1 & obj){
     if(&obj == this)return *this;
-
     if(value_ != nullptr)
         delete value_;
     value_ = new std::string(*obj.value_);
-
     return *this;
 }
 
@@ -58,17 +57,45 @@ json_string_v1 & json_string_v1::operator=(json_string_v1 & obj){
  * move assignment 
  */
 json_string_v1 & json_string_v1::operator=(json_string_v1 && obj) {
-    if(& obj == this)
+    if(&obj == this)
         return *this;
-
     if(value_ != nullptr)delete value_;
-
     value_ = obj.value_;
-
     obj.value_ = nullptr;
     return *this;
 }
 
-std::unique_ptr<basic_object_interface > json_string_v1::clone(){
-    return std::make_unique<json_string_v1 >(*this);
+std::shared_ptr<basic_object_interface > json_string_v1::clone(){
+    return std::make_shared<json_string_v1 >(*this);
+}
+
+std::string json_string_v1::get_body_type(){
+     return "application/string";
+}
+
+
+// parse methods
+json_string_v1::buffer_type * json_string_v1::buffer(){
+    assert(0);
+    return nullptr;
+}
+void json_string_v1::parse(buffer_type * buffer){
+    char ch = *(buffer->data + buffer->head);
+    assert(ch == 't' || ch == 'f' );
+    json_tokenizer * tokenizer = tokenizer_builder<json_tokenizer>(buffer->data + buffer->head);
+    parse(*tokenizer);
+}
+void json_string_v1::at_eof(buffer_type * buffer){
+    //TODO
+    return ;
+}
+bool json_string_v1::continue_reading(){
+    return false;
+}
+
+json_string_v1 & json_string_v1::clear(){
+    value_->clear();
+    delete value_ ;
+    value_ = nullptr;
+    return *this;
 }

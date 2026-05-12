@@ -14,6 +14,9 @@ class basic_formatter_interface{
         virtual basic_formatter_interface & increment_tab_count() = 0;
         virtual basic_formatter_interface & decrement_tab_count() = 0;
 
+        virtual basic_formatter_interface & header_post_processor(std::string & res) = 0;
+        virtual basic_formatter_interface & body_post_processor(std::string & res) = 0;
+
 };
 
 

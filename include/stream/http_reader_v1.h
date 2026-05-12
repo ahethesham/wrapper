@@ -5,8 +5,10 @@
 #include "basic_io_handle_interface.h"
 #include "buffer.h"
 #include "basic_reader_interface.h"
+#include <memory>
 #include <sys/socket.h>
 #include "openssl/ssl.h"
+#include "socket_io_handle.h"
 
 using http_parser_interface    = basic_parser_interface<buffer_v1>;
 
@@ -14,6 +16,17 @@ using http_parser_interface    = basic_parser_interface<buffer_v1>;
 using socket_io_handle_interface  = basic_io_handle_interface< int , sockaddr *>;
 using ssl_socket_io_handle_interface = basic_io_handle_interface< SSL * , sockaddr *>;
 
+namespace detail{
+    using reader_callback = std::function<int(int rc )>;
+inline int std_reader(int fd , void * buffer , ssize_t size , reader_callback cb){
+    int rc = ::read(fd , buffer , size);
+    return cb(rc);
+}
+inline int std_tls_reader(SSL * fd , void * buffer , ssize_t size , reader_callback cb){
+    int rc = ::SSL_read(fd , buffer , size);
+    return cb(rc);
+}
+}
 
 
 
@@ -28,7 +41,7 @@ class http_reader_v1 : public basic_reader_interface< io_handle_policy>{
         using buffer_type = base_type::buffer_type;
 
         http_reader_v1(io_handle_type & handle);
-        http_reader_v1(io_handle_type * handle);
+        http_reader_v1(std::shared_ptr<io_handle_type> handle);
 
 
         size_type read(void * buffer , ssize_t size) override;
@@ -37,9 +50,14 @@ class http_reader_v1 : public basic_reader_interface< io_handle_policy>{
         size_type read(buffer_type * buffer) override;
 
         self_type & operator>>(http_parser_interface & parser) override;
+
+
     private:
         io_handle_type * handle_;
         buffer_v1 * buffer_;
 };
 
+
+using http_reader = http_reader_v1< socket_io_handle_interface, detail::std_reader>;
+using https_reader = http_reader_v1<ssl_socket_io_handle_interface , detail::std_reader>;
 #endif

@@ -1,7 +1,6 @@
 #include <cassert>
 #include <stdexcept>
 #include "file_reader_v1.h"
-#include "stream_fwd.h"
 
 using size_type = file_reader_v1::size_type;
 
@@ -14,7 +13,7 @@ size_type file_reader_v1::read(void * buffer , ssize_t size) {
     int totalBytes = 0;
     int rc;
     while(remainingBytes > 0){
-        rc = std_file_reader(fd_ , (void *)((char *)buffer + currentIdx ), remainingBytes);
+        rc = detail::std_file_reader(fd_ , ((char *)buffer + currentIdx ), remainingBytes , [](int rc){return rc;});
         if(rc == 0){
             handle_ .close();
             throw std::runtime_error("Host had closed unexpectedly");
@@ -39,7 +38,7 @@ file_reader_v1::self_type & file_reader_v1::read(file_reader_v1::parser_type & p
             parser.at_eof(buffer);
             break;
         }
-        rc = std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024);
+        rc = detail::std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024 , [](int rc){return rc;});
         if(rc == 0){
             parser.at_eof(buffer);
             handle_.close();
@@ -61,7 +60,7 @@ file_reader_v1::size_type file_reader_v1::read(file_reader_v1::buffer_type * buf
         if(handle_.is_closed()){
             break;
         }
-        rc = std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024);
+        rc = detail::std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024 , [](int rc ){return rc ;});
         if(rc == 0){
             handle_.close();
             break;
@@ -83,7 +82,7 @@ file_reader_v1::self_type & file_reader_v1::operator >> (parser_type & parser) {
             parser.at_eof(buffer);
             break;
         }
-        rc = std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024);
+        rc = detail::std_file_reader(handle_.get() , (buffer->data + buffer->tail ) , 64 * 1024 , [](int rc){return rc;});
         if(rc == 0){
             parser.at_eof(buffer);
             handle_.close();

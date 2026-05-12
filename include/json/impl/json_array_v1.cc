@@ -1,8 +1,8 @@
-#include "basic_json_tokenizer_interface.h"
+#include "basic_object_interface.h"
 #include "json_array_v1.h"
 #include "json_builder.h"
 
-json_array_v1::json_array_v1(basic_json_tokenizer_interface & tokenizer):storage_(new std::vector<basic_object_interface *>()){
+json_array_v1::json_array_v1(json_tokenizer & tokenizer):storage_(new std::vector<basic_object_interface *>()){
     parse(tokenizer);
 }
 json_array_v1::json_array_v1(json_array_v1 & obj):storage_(new std::vector<basic_object_interface*>()){
@@ -22,7 +22,7 @@ json_array_v1::json_array_v1(json_array_v1 &&  obj):storage_(nullptr){
 /*
  * Will be mostly used for mocking tests
  */
-json_array_v1::json_array_v1(const char * input):storage_(nullptr){
+json_array_v1::json_array_v1(const char * input):storage_(new std::vector<basic_object_interface *>()){
 
     auto tokenizer = *tokenizer_builder<json_tokenizer>(input);
     parse(tokenizer);
@@ -65,7 +65,7 @@ std::string json_array_v1::serialize(basic_formatter_interface & formatter){
     return res;
 }
 
-void json_array_v1::parse(basic_json_tokenizer_interface & tokenizer){
+void json_array_v1::parse(json_tokenizer & tokenizer){
     assert(tokenizer.getNext()->compare('['));
     //++(tokenizer);
     while(tokenizer.hasNext()){
@@ -108,11 +108,45 @@ json_array_v1 &  json_array_v1::operator=(json_array_v1 && obj){
     return *this;
 }
 
-std::unique_ptr<basic_object_interface>  json_array_v1::clone(){
-    return std::make_unique<json_array_v1>(*this);
+std::shared_ptr<basic_object_interface>  json_array_v1::clone(){
+    return std::make_shared<json_array_v1>(*this);
 }
 
 json_array_v1 & json_array_v1::push(basic_object_interface * obj){
     storage_->push_back(obj);
     return *this;
 }
+
+std::string json_array_v1::get_body_type(){
+    return "application/string";
+}
+
+//parser methods
+json_array_v1::buffer_type * json_array_v1::buffer(){
+    //TODO
+    assert(false);
+    return nullptr;
+}
+void json_array_v1::parse(json_array_v1::buffer_type * buffer){
+    assert(*(buffer->data + buffer->head) == '[');
+    json_tokenizer * tokenizer = tokenizer_builder<json_tokenizer>((buffer->data + buffer->head));
+    parse(*tokenizer);
+    return ;
+}
+void json_array_v1::at_eof(json_array_v1::buffer_type * buffer){
+    // TODO
+    return ;
+}
+bool json_array_v1::continue_reading(){
+    return false;
+}
+
+json_array_v1 & json_array_v1::clear(){
+    for(auto x : *storage_){
+        x->clear();
+        delete x;
+    }
+    return *this;
+}
+
+

@@ -1,22 +1,22 @@
-include token/makefile
-include formatter/makefile
-include stream/makefile
-include json/makefile
-include builder/makefile
-include web/makefile
-include logger/makefile
-include config/makefile
+ifndef __ALPHA_MAKEFILE__
+__ALPHA_MAKEFILE__ := 1
+HOME := $(shell find ~/ -type d -name agent | head -n 1 )
 
+include ${HOME}/include/json/makefile
+include ${HOME}/include/logger/makefile
 
-all: BUILD_ALL_MODULES 
+LIB_FILE:=${HOME}/include/libs/libalpha.so
 
-BUILD_ALL_MODULES: 
-	$(MAKE) -C token
-	$(MAKE) -C formatter
-	$(MAKE) -C stream
-	$(MAKE) -C json
-	$(MAKE) -C builder
-	$(MAKE) -C web
-	$(MAKE) -C logger
-	$(MAKE) -C config
+.PHONY: clean_all app
 
+all: json_clean stream_clean logger_clean json_all logger_all app
+	${CXX} -std=c++23 ${OBJS} ${INCLUDES} ${LINKERS} -o ${LIB_FILE}
+	@echo "compiled and generated ${LIB_FILE} successfully "
+
+app: 
+	$(eval OBJS=$(shell find ${HOME}/include -type f -name *.o))
+
+clean:
+	rm -f ./libs/*
+
+endif

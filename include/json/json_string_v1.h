@@ -4,7 +4,7 @@
 class json_string_v1 : public basic_object_interface{
     
     public:
-        json_string_v1(basic_json_tokenizer_interface & tokenizer) ;
+        json_string_v1(json_tokenizer & tokenizer) ;
         json_string_v1(const char * input);
         json_string_v1(json_string_v1 &);
         json_string_v1(json_string_v1 &&);
@@ -14,12 +14,21 @@ class json_string_v1 : public basic_object_interface{
         std::string serialize() override;
         std::string serialize(basic_formatter_interface & formatter) override;
 
-        void parse(basic_json_tokenizer_interface & tokenizer) override;
+        void parse(json_tokenizer & tokenizer) override;
 
         json_string_v1 & operator=(json_string_v1 &) ;
         json_string_v1 & operator=(json_string_v1 &&) ;
-        std::unique_ptr<basic_object_interface> clone() override;
+        std::shared_ptr<basic_object_interface> clone() override;
 
+        std::string get_body_type() override;
+
+        // parse methods
+        bool continue_reading() override;
+        void at_eof(buffer_type * buffer) override;
+        void parse(buffer_type * buffer) override;
+        buffer_type * buffer() override;
+
+        json_string_v1 & clear() override;
 
     private:
         std::string *value_;

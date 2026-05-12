@@ -1,5 +1,7 @@
 #include "json_grammer_v1.h"
+#ifdef __DEBUG
 #include "file_logger_v1.h"
+#endif
 #include <cstring>
 #include <stdlib.h>
 
@@ -29,6 +31,8 @@ bool json_grammer_v1::is_unexpected_char(char ch){
 }
 
 bool json_grammer_v1::continue_reading(char ch ){
+#ifdef __DEBUG
     Logger & logger = Logger::build();
+#endif
     return strchr(skippable_chars_ , ch) != NULL;
 }

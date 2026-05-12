@@ -6,8 +6,9 @@
 
 #include "basic_config_interface.h"
 #include "basic_parser_interface.h"
+#include "file_reader_v1.h"
 #include "buffer.h"
-#include "stream_fwd.h"
+#include <functional>
 #include <map>
 #include <stdexcept>
 

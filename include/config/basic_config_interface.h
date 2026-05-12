@@ -3,7 +3,6 @@
 
 
 #include "buffer.h"
-#include "stream_fwd.h"
 #include <string>
 
 template<typename key_policy ,

@@ -1,38 +1,44 @@
+ifndef __FORMATTER__MAKEFILE__
+__FORMATTER__MAKEFILE__ := 1
+
+#this is a level 0 object L0 .. and is not supposed to be dependent on any other object
 
 HOME=$(shell find ~ -type d -name agent | head -n 1)
+CFLAGS ?= -Wall -Wextra -MMD -MP
 
-TEST_MAIN=${HOME}/include/formatter/tests/mock.cc
-
-OBJS=${HOME}/include/formatter/build/json_formatter_v1.o \
+FORMATTER_TEST_MAIN=${HOME}/include/formatter/tests/mock.cc
+FORMATTER_OBJS=${HOME}/include/formatter/build/json_formatter_v1.o \
 	${HOME}/include/formatter/build/http_formatter_v1.o
 
-TEST_OBJ=${HOME}/include/formatter/tests/mock.o
+FORMATTER_DEP = $(FORMATTER_OBJS:.o=.d)
+FORMATTER_TEST_OBJ=${HOME}/include/formatter/tests/mock.o
+FORMATTER_DEP += $(FORMATTER_TEST_OBJ:.o=.d)
+FORMATTER_LIB_FILE=${HOME}/include/formatter/libs/libformatter.so
 
-INCLUDE_HEADERS := $(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ) \
-				   	/usr/include/ 
-
-BIN_DIR=${HOME}/include/formatter/bin
-LIB_DIR=${HOME}/include/formatter/libs
-
-INCLUDES := $(addprefix -I,$(INCLUDE_HEADERS))
-
-LINKERS=
-
-mock_json_formatter: ${TEST_OBJ} ${OBJS} 
-	${CXX} -std=c++23  $^ ${INCLUDES} ${LINKERS} -o ${BIN_DIR}/mock
+INCLUDES ?= $(addprefix -I,$(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ))
 
 
-all: ${OBJS}
-	${CXX} -std=c++23 -fPIC --shared $^ ${INCLUDES} ${LINKERS} -o ${LIB_DIR}/libformatter.so
+.PHONY: formatter_all formatter_clean
+
+formatter_all: formatter_app
+	echo "compiled and generated ${FORMATTER_LIB_FILE} successfully"
+
+formatter_app: ${FORMATTER_OBJS}
+	${CXX} -std=c++23 -fPIC --shared $^ ${INCLUDES}  -o ${FORMATTER_LIB_FILE}
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/formatter/libs/ -lformatter)
 
 ${HOME}/include/formatter/build/%.o: ${HOME}/include/formatter/impl/%.cc 
-	${CXX} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+	${CXX} ${CFLAGS} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
 
-${TEST_OBJ}: ${TEST_MAIN}
-	${CXX} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@ 
+${FORMATTER_TEST_OBJ}: ${FORMATTER_TEST_MAIN}
+	${CXX} ${CFLAGS} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@ 
 
+-include $(FORMATTER_DEP)
 
-clean: 
+formatter_clean: 
 	if [ $$(ls ./libs/ | wc -l ) -gt 0 ]; then rm ./libs/* ; fi
 	if [ $$(ls ./build/ | wc -l ) -gt 0 ]; then rm ./build/* ; fi
 	if [ $$(ls ./bin/ | wc -l ) -gt 0 ]; then rm ./bin/* ; fi
+	if [ $$(ls ./tests/*.o) ]; then rm ./tests/*.o ; fi
+
+endif

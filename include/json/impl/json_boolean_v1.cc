@@ -1,7 +1,8 @@
 #include "json_boolean_v1.h"
-#include "basic_json_tokenizer_interface.h"
+#include "basic_object_interface.h"
+#include "json_builder.h"
 
-json_boolean_v1::json_boolean_v1(basic_json_tokenizer_interface &  tokenizer){
+json_boolean_v1::json_boolean_v1(json_tokenizer &  tokenizer){
     parse(tokenizer);
 }
 
@@ -22,12 +23,14 @@ bool & json_boolean_v1::value(){
 std::string json_boolean_v1::serialize(){
     return  value_ ? "true" :  "false";
 }
+
+
 std::string json_boolean_v1::serialize(basic_formatter_interface & formatter){
     return serialize();
 }
 
 
-void json_boolean_v1::parse(basic_json_tokenizer_interface &   tokenizer){
+void json_boolean_v1::parse(json_tokenizer &   tokenizer){
 
     char ch = tokenizer.peek()->get();
     assert(ch == 't' || ch == 'f');
@@ -59,6 +62,33 @@ json_boolean_v1 & json_boolean_v1::operator=(json_boolean_v1 && obj){
     
 }
 
-std::unique_ptr<basic_object_interface> json_boolean_v1::clone(){
-    return std::make_unique<json_boolean_v1>(*this);
+std::shared_ptr<basic_object_interface> json_boolean_v1::clone(){
+    return std::make_shared<json_boolean_v1>(*this);
+}
+std::string json_boolean_v1::get_body_type(){
+    return "application/bool";
+}
+
+// parse methods
+json_boolean_v1::buffer_type * json_boolean_v1::buffer(){
+    assert(0);
+    return nullptr;
+}
+void json_boolean_v1::parse(buffer_type * buffer){
+    char ch = *(buffer->data + buffer->head);
+    assert(ch == 't' || ch == 'f' );
+    json_tokenizer * tokenizer = tokenizer_builder<json_tokenizer>(buffer->data + buffer->head);
+    parse(*tokenizer);
+}
+void json_boolean_v1::at_eof(buffer_type * buffer){
+    //TODO
+    return ;
+}
+bool json_boolean_v1::continue_reading(){
+    return false;
+}
+
+json_boolean_v1 & json_boolean_v1::clear(){
+    value_ = false;
+    return *this;
 }

@@ -11,9 +11,8 @@ fi
 
 # get all the include files first
 ALL_INCLUDES="$(find ${HOME_DIR} -type f -name "*.h" 2>/dev/null)"
-ALL_INCLUDES="$ALL_INCLUDES $(find "/usr/include/openssl/" -type f -name "*.h" 2>/dev/null)"
+#ALL_INCLUDES="$ALL_INCLUDES $(find "/usr/include/openssl/" -type f -name "*.h" 2>/dev/null)"
 
-echo $(find "/usr/include/" -type f -name "*.h")
 
 INCLUDES=""
 DUPLICATES=""
@@ -40,7 +39,7 @@ CXX_FILES="$CXX_FILES $(find ${HOME_DIR} -type f -name "*.cc" 2>/dev/null)"
 
 C_FILES=$(find ${HOME_DIR} -type f -name "*.c" 2>/dev/null)
 
-printf "[\n" >>${COMMAND_FILE}
+printf "[\n" >>"${COMMAND_FILE}"
 
 # for each .cxx file create a {"directory"}
 for f in ${CXX_FILES}; do

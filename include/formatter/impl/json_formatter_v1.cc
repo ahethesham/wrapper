@@ -26,3 +26,10 @@ json_formatter_v1 & json_formatter_v1::decrement_tab_count(){
     tab_count_--;
     return *this;
 }
+
+json_formatter_v1 & json_formatter_v1::header_post_processor(std::string & res){
+    return *this;
+}
+json_formatter_v1 & json_formatter_v1::body_post_processor(std::string & res ){
+    return *this;
+}

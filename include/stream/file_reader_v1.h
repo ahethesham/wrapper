@@ -1,17 +1,20 @@
 #ifndef __FILE_READER_V1_H__
 #define __FILE_READER_V1_H__
 
-#include "io_handles_fwd.h"
+#include "file_io_handle.h"
 #include "basic_parser_interface.h"
 #include "buffer.h"
 #include "basic_reader_interface.h"
+
+using file_reader_interface =  basic_reader_interface<file_io_handle_interface ,
+                              basic_parser_interface<buffer_v1> ,
+                              buffer_v1 >;
+
 /*
  * Any object which wants to utilize the file reader object must implement the parser interface 
  */
 
-class file_reader_v1 : public basic_reader_interface<file_io_handle_interface ,
-                              basic_parser_interface<buffer_v1> ,
-                              buffer_v1 >
+class file_reader_v1 : public file_reader_interface
 {
 
         public:

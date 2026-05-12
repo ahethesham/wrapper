@@ -1,11 +1,13 @@
+#include "basic_object_interface.h"
 #include "file_logger_v1.h"
+#include <iostream>
 #include <stdexcept>
 #include "json_object_v1.h"
 #include "json_builder.h"
 #include "json_string_v1.h"
 #include "json_tokenizer_v1.h"
 
-json_object_v1::json_object_v1(basic_json_tokenizer_interface &  tokenizer) : buffer_(nullptr) , storage_(new std::map<std::string , basic_object_interface*>()){    
+json_object_v1::json_object_v1(json_tokenizer &  tokenizer) : buffer_(nullptr) , storage_(new std::map<std::string , basic_object_interface*>()){    
     this->parse(tokenizer);
 }
 
@@ -21,7 +23,7 @@ json_object_v1::json_object_v1(json_object_v1 && obj) : buffer_(nullptr) , stora
 /*
  * Copy construct
  */
-json_object_v1::json_object_v1(json_object_v1 & obj) : buffer_(nullptr) , storage_(nullptr){
+json_object_v1::json_object_v1(json_object_v1 & obj) : buffer_(nullptr) , storage_(new std::map<std::string , basic_object_interface *>()){
     for(auto itr : *obj.storage_){
         (*storage_)[itr.first] = itr.second;
     }
@@ -44,7 +46,7 @@ std::string json_object_v1::serialize(){
         res += itr.second->serialize();
     }
     if(storage_->size() > 0)
-        res += "\r\n\t}";
+        res += "\r\n}";
     else 
         res += '}';
     return res;
@@ -59,7 +61,6 @@ std::string json_object_v1::serialize(basic_formatter_interface & formatter){
             res +=  ',';
         formatter.line_post_processor(res);
         formatter.line_pre_processor(res);
-
         starting = false;
         res += '\"' + itr.first + '\"' + ':' + ' ';
         res += itr.second->serialize(formatter);
@@ -71,7 +72,7 @@ std::string json_object_v1::serialize(basic_formatter_interface & formatter){
     return res;
 }
 
-void json_object_v1::parse(basic_json_tokenizer_interface & tokenizer){
+void json_object_v1::parse(json_tokenizer & tokenizer){
 
     Logger & logger = Logger::build();
 
@@ -115,20 +116,22 @@ json_object_v1 & json_object_v1::push(std::string key , basic_object_interface *
     return *this;
 }
 
+//parser methods
 bool json_object_v1::continue_reading(){
-    return true;
+    return false;
 }
-
 void json_object_v1::at_eof(buffer_type * buffer){
-    // TODO have some logic to get the tokenizer impl
+    //TODO
+    return ;
 }
-
 void json_object_v1::parse(buffer_type * buffer){
-    // TODO have some logic to get the tokenizer impl
+    assert(*(buffer->data + buffer->head ) == '{');
+    json_tokenizer * tokenizer = tokenizer_builder<json_tokenizer>(buffer->data + buffer->head);
+    parse(*tokenizer);
+    return ;
 }
-
 json_object_v1::buffer_type *json_object_v1::buffer(){
-    //TODO serialize and put it into the buffer
+    assert(0);
     return nullptr;
 }
 
@@ -136,12 +139,11 @@ json_object_v1::buffer_type *json_object_v1::buffer(){
  * copy assignment  
  */
 json_object_v1 & json_object_v1::operator=(json_object_v1 & obj){
-    
     if(&obj == this)
         return *this;
     //TODO make sure to delete the pointers associated with this storage 
     storage_->clear();
-
+    
     for(auto itr : *obj.storage_){
         (*storage_)[itr.first] = itr.second;
     }
@@ -162,6 +164,30 @@ json_object_v1 & json_object_v1::operator=(json_object_v1 && obj){
     return *this;
 }
 
-std::unique_ptr<basic_object_interface> json_object_v1::clone(){
-    return std::make_unique<json_object_v1>(*this);
+std::shared_ptr<basic_object_interface> json_object_v1::clone(){
+
+    return std::make_shared<json_object_v1>(*this);
+}
+
+std::string json_object_v1::get_body_type(){
+    return "application/json";
+}
+
+json_object_v1 & json_object_v1::clear(){
+    if(storage_ == nullptr)return *this;
+    for(auto x : *storage_){
+        x.second->clear();
+        delete x.second;
+        x.second = nullptr;
+    }
+    storage_->clear();
+    return *this;
+}
+
+json_object_v1::~json_object_v1(){
+    clear();
+    if(storage_ != nullptr){
+        delete storage_;
+        storage_ = nullptr;
+    }
 }

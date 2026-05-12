@@ -1,12 +1,11 @@
 
 #include "http_reader_v1.h"
 #include "basic_parser_interface.h"
-#include "stream_fwd.h"
 #include <stdexcept>
 
 template<typename IO ,
          auto func>
-http_reader_v1<IO , func>::http_reader_v1(io_handle_type * io_handle) : handle_(io_handle){}
+http_reader_v1<IO , func>::http_reader_v1(std::shared_ptr<IO> handle) : handle_(handle){}
 
 template<typename IO , auto func>
 http_reader_v1<IO, func>::size_type http_reader_v1<IO , func>::read(void * buffer , ssize_t size) {
@@ -34,7 +33,7 @@ http_reader_v1<IO, func>::self_type & http_reader_v1<IO, func>::read(http_parser
     int rc ;
     while(parser.continue_reading())
     {
-        rc = reader_func(handle_->get() , buffer->data + buffer->tail , 64 * 1024);
+        rc = func(handle_->get() , buffer->data + buffer->tail , 64 * 1024);
         if(rc == 0){
             parser.at_eof(buffer);
             break;
@@ -54,7 +53,7 @@ http_reader_v1<IO , func>::size_type http_reader_v1<IO , func>::read(buffer_type
     int totalBytes = 0;
     while(1)
     {
-        rc = reader_func(handle_->get() , buffer->data + buffer->tail , 64 * 1024);
+        rc = func(handle_->get() , buffer->data + buffer->tail , 64 * 1024);
         if(rc == 0){
             // client closed the socket 
             break;

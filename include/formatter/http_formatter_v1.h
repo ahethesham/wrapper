@@ -12,7 +12,8 @@ class http_formatter_v1 : public basic_formatter_interface{
         self_type & line_post_processor(std::string &str)override;
         self_type & increment_tab_count() override;
         self_type & decrement_tab_count() override;
-
+        self_type & header_post_processor(std::string & str) override;
+        self_type & body_post_processor(std::string & str) override;
         http_formatter_v1();
     private:
         int tab_count_;

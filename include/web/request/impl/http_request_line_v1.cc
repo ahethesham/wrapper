@@ -10,7 +10,17 @@ class http_request_line_v1::impl{
     using callback = std::function<bool (buffer_v1 *)>;
     public:
 
-        impl() : method_(new std::string()) , version_(new std::string()) , uri_(new std::string()) , query_params_(new std::map<std::string , std::string >()){}
+        impl() : method_(new std::string("GET")) , version_(new std::string("HTTP/1.1")) , uri_(new std::string("/")) , query_params_(new std::map<std::string , std::string >()){
+            cb_ = [this](buffer_type * buffer){
+                return extract_line(buffer);
+            };
+        }
+        impl(std::string & method , std::string uri , std::string & version , std::map<std::string , std::string > & params)
+            : method_(new std::string(method)) , version_(new std::string(version)) , uri_(new std::string(uri)) , query_params_(new std::map<std::string , std::string>(params)) {
+            cb_ = [this](buffer_type * buffer){
+                return extract_line(buffer);
+            };
+        }
         
         void set_method(std::string &method){
             assert(method_ != nullptr);
@@ -49,8 +59,12 @@ class http_request_line_v1::impl{
             return *version_;
         }
 
-        const std::string & get_query_param(std::string key){
-            return (*query_params_)[key];
+         std::string & get_query_param(std::string key){
+             auto itr = query_params_->find(key);
+             if(itr == query_params_->end())
+                 throw std::runtime_error("Param Not Found");
+
+            return itr->second;
         }
         void at_eof(buffer_v1 * buffer){
             //TODO
@@ -66,31 +80,91 @@ class http_request_line_v1::impl{
         }
         std::string serialize(basic_formatter_interface &  formatter){
             std::string res = "";
-            res = *method_ + ' ' + *uri_ + ' ' + *version_;
+            if(uri_->size() == 0)
+                *uri_ = '/';
+
+           res = *method_ + ' ' +  *uri_ ;
+            if(query_params_->size() > 0)
+                res += '?';
+            bool start = true;
+            for(auto itr : *query_params_)
+            {
+                if(!start)
+                    res += '&';
+                start = false;
+                res += itr.first ;
+                res += '=' ;
+                res += itr.second;
+            }
+
+            res += ' ' + *version_;
+            formatter.line_post_processor(res);
             return res;
         }
-
+        std::map<std::string , std::string > & get_query_params(){
+            return *query_params_;
+        }
     private:
         bool extract_line(buffer_v1 * buffer){
             if(buffer == nullptr)return false;
             if(strstr(buffer->data + buffer->head , "\r\n") == NULL)
                 return true;
-            while(*(buffer->data + buffer->head) != ' ')
-                method_ += *(buffer->data + buffer->head++);
-            while(*(buffer->data + buffer->head) != ' ')
-                uri_ += *(buffer->data + buffer->head++);
-            while(*(buffer->data + buffer->head) != ' ')
-                version_ += *(buffer->data + buffer->head++);
+            std::string temp_str = "";
 
-            extract_query_param(*uri_);
+            while(*(buffer->data + buffer->head) != ' ')
+                temp_str += *(buffer->data + buffer->head++);
+
+            assert(*(buffer->data + buffer->head++) == ' ');
+
+            set_method(temp_str);
+            temp_str.clear();
+
+            while(*(buffer->data + buffer->head) != ' '){
+                if(*(buffer->data + buffer->head) == '?')
+                    extract_query_param(buffer);
+                else
+                    temp_str += *(buffer->data + buffer->head++);
+            }
+
+            assert(*(buffer->data + buffer->head++) == ' ');
+            set_uri(temp_str);
+            temp_str.clear();
+
+            while(*(buffer->data + buffer->head) != '\r')
+                temp_str += *(buffer->data + buffer->head++);
+            
+            assert(*(buffer->data + buffer->head++) == '\r' &&
+                    *(buffer->data + buffer->head++) == '\n');
+            set_version(temp_str);
+            temp_str.clear();
+
             cb_ = [this](buffer_v1 * buffer){
                 return false;
             };
-
             return false;
         }
-        void extract_query_param(std::string & str){
-            //TODO
+        void extract_query_param(buffer_type * buffer){
+            assert(*(buffer->data + buffer->head++) == '?');
+            std::string key , value;
+            short turn = 0;
+            while(*(buffer->data + buffer->head ) != ' '){
+                if(*(buffer->data + buffer->head ) == '&'){
+                    assert(turn == 1);
+                    buffer->head++;
+                    turn = 0;
+                    (*query_params_)[key] = value;
+                    key = value = "";
+                    continue;
+                }else if(*(buffer->data + buffer->head) == '='){
+                    assert(turn == 0);
+                    turn = 1;
+                    buffer->head++;
+                    continue;
+                }
+                turn == 0 ? key += *(buffer->data + buffer->head++) : value += *(buffer->data + buffer->head++);
+            }
+            if(turn == 1)
+                (*query_params_)[key] = value;
             return ;
         }
         std::string *method_;
@@ -102,9 +176,8 @@ class http_request_line_v1::impl{
 
 http_request_line_v1::http_request_line_v1() : impl_(new impl()){}
 
-http_request_line_v1::http_request_line_v1(http_request_line_v1 &obj){
-    throw std::runtime_error("yet to implement a copy constrcutor");
-}
+http_request_line_v1::http_request_line_v1(http_request_line_v1 &obj) : impl_(new impl(obj.get_method() , obj.get_uri() , obj.get_version() , obj.impl_->get_query_params())) { }
+
 http_request_line_v1::http_request_line_v1(http_request_line_v1 && obj){
     if(impl_)
         delete impl_;
@@ -131,17 +204,17 @@ http_request_line_v1::self_type & http_request_line_v1::set_query_param(std::str
     return *this;
 }
 
-const std::string & http_request_line_v1::get_method(){
+std::string & http_request_line_v1::get_method(){
     return impl_->get_method();
 }
-const std::string & http_request_line_v1::get_uri(){
+ std::string & http_request_line_v1::get_uri(){
     return impl_->get_uri();
 }
-const std::string & http_request_line_v1::get_version(){
+ std::string & http_request_line_v1::get_version(){
     return impl_->get_version();
 }
 
-const std::string & http_request_line_v1::get_query_param(std::string key){
+ std::string & http_request_line_v1::get_query_param(std::string key){
     return impl_->get_query_param(key);
 }
 
@@ -165,8 +238,15 @@ std::string http_request_line_v1::serialize(basic_formatter_interface & formatte
 }
 //copy assignment 
 http_request_line_v1::self_type & http_request_line_v1::operator=(http_request_line_v1 & obj){
+    if(&obj == this)
+        return *this;
+    impl_->set_method(obj.get_method());
+    impl_->set_uri(obj.get_uri());
+
+    //impl_->set_query_param(obj.get_query_params());
     return *this;
 }
+
 http_request_line_v1::self_type & http_request_line_v1::operator=(http_request_line_v1 && obj){
     if(this == &obj)return *this;
     if(impl_)
@@ -174,4 +254,8 @@ http_request_line_v1::self_type & http_request_line_v1::operator=(http_request_l
     impl_ = obj.impl_;
     obj.impl_ = nullptr;
     return *this;
+}
+
+std::shared_ptr<basic_http_request_line_interface> http_request_line_v1::clone(){
+    return std::make_shared<http_request_line_v1>(*this);
 }

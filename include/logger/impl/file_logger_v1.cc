@@ -1,9 +1,9 @@
 #include "file_logger_v1.h"
 #include "file_writer_v1.h"
 #include "io_handles_fwd.h"
-#include "stream_fwd.h"
 #include <cstdarg>
 #include <ctime>
+#include <iostream>
 #include <pthread.h>
 #include <string>
 #include <unistd.h>
@@ -86,12 +86,15 @@ template<> impl & impl::build(const char * file_format){
         return * instance_;
     }
     char  file[1024] = {0};
-    static char hostname[1024] = {0};
+    static char hostname[512] = {0};
     if(hostname[0] == '\0')
-        gethostname(hostname , 1024);
-
-    sprintf(file , file_format , hostname , getpid() , pthread_self());
-
+        gethostname(hostname , sizeof(hostname));
+    
+    if(file_format == nullptr){
+        sprintf(file , "agent-dev-%s-%d-%lu.log" , hostname , getpid() , pthread_self());
+    }else{
+        sprintf(file , file_format , hostname , getpid() , pthread_self());
+    }
     return * (instance_ = new impl(*new io_handle_type((const char *)file)));
 }
 
@@ -105,7 +108,7 @@ template<> impl & impl::operator << (const std::string & str) {
     memcpy((buffer_->data + buffer_->tail) , str.c_str() , str.length());
 
     buffer_->tail =  strlen(buffer_->data);
-    buffer_->data[buffer_->tail++] = '\n';
+    //buffer_->data[buffer_->tail++] = '\n';
     buffer_->remainingBytes = buffer_->tail;
 
 

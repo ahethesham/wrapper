@@ -1,9 +1,19 @@
 #ifndef __BASIC_READER_INTERFACE_H__
 #define __BASIC_READER_INTERFACE_H__
 
+#include <cstdio>
+#include <functional>
 #include <unistd.h>
 #include "basic_parser_interface.h"
 #include "buffer.h"
+
+namespace detail{
+    using file_reader_callback = std::function<int(int rc )>;
+inline int std_file_reader(FILE * fptr , char * buffer , size_t size , file_reader_callback cb){
+    int rc = ::fread(buffer , sizeof(char) , size , fptr);
+    return cb(rc);
+ }
+};
 
 template < typename io_handle_policy , 
            typename parser_policy = basic_parser_interface<buffer_v1>,

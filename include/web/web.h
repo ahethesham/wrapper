@@ -1,12 +1,9 @@
 #ifndef __WEB_H__
 #define __WEB_H__
 
-#include "http_request_fwd.h"
+#include "basic_http_request_interface.h"
 #include "http_reader_v1.h"
-#include "stream_fwd.h"
-#include "client.h"
-#include "web_fwd.h"
-
+#include "http_writer_v1.h"
 
 using http_1_0_server_reader = http_reader;
 using http_1_0_server_writer = http_writer;
@@ -15,7 +12,7 @@ using https_1_0_client_writer = http_writer;
 
 
 
-
+#if 0
 using http_server =  basic_server< tcp_socket,
                       tcp_endpoint ,
                       tcp_binder , 
@@ -25,6 +22,7 @@ using http_server =  basic_server< tcp_socket,
                       http_request ,
                       http_response ,
                       HttpServer<basic_matcher>> ;
+#endif
 #if 0
 using http_client =  basic_client< tcp_socket ,
                       tcp_endpoint ,

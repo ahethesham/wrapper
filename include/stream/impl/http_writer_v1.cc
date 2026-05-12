@@ -3,7 +3,7 @@
 
 template<typename IO ,
         auto func>
-http_writer_v1<IO , func>::http_writer_v1(IO * handle) : handle_(handle){}
+http_writer_v1<IO , func>::http_writer_v1(std::shared_ptr<IO> handle) : handle_(handle){}
 
 template<typename IO,
     auto func>
@@ -12,11 +12,11 @@ http_writer_v1<IO , func>::size_type http_writer_v1<IO , func>::write(void * buf
     using size_type = http_writer_v1<IO , func>::size_type;
     size_type totalBytes = 0;
     size_type currentIdx = 0;
-    size_type remainingBytes = 0;
+    size_type remainingBytes = size;
     int rc = 0;
 
     while(remainingBytes > 0){
-        rc = func(handle_->get() , (buffer + currentIdx) , remainingBytes);
+        rc = func(handle_->get() , (void *)((char  *)buffer + currentIdx) , remainingBytes , [](int rc){return rc ;});
         if(rc == 0){
             throw std::runtime_error("client closed the handle");
         }else if(rc < 0){
@@ -24,8 +24,8 @@ http_writer_v1<IO , func>::size_type http_writer_v1<IO , func>::write(void * buf
             throw std::runtime_error("unknown exception occurred in client");
         }
         remainingBytes -= rc;
-        currentIdx     + rc;
-        totalBytes     + rc;
+        currentIdx     += rc;
+        totalBytes     += rc;
     }
 
     return totalBytes;
@@ -51,14 +51,14 @@ http_writer_v1<IO , func>::size_type http_writer_v1<IO , func>::write(typename h
 template<typename IO ,
         auto func>
 http_writer_v1<IO , func>::self_type & http_writer_v1<IO , func>::operator<<(typename http_writer_v1<IO , func>::parser_type & parser){
-    this->write(parser.buffer);
+    this->write(parser.buffer());
     return *this;
 }
 
 template<typename IO ,
         auto func>
-http_writer_v1<IO , func>::self_type & http_writer_v1<IO , func>::operator<<(std::string &str){
-    this->write((void *)str.c_str() , str.size());
+http_writer_v1<IO , func>::self_type & http_writer_v1<IO , func>::operator<<(std::basic_string<char>& str){
+    this->write((void *)str.c_str() , (ssize_t)str.size());
     return *this;
 }
 
@@ -78,7 +78,7 @@ http_writer_v1<IO , func>::self_type & http_writer_v1<IO , func>::operator<<(int
 
 template<typename IO ,
         auto func>
-http_writer_v1<IO , func>::self_type & http_writer_v1<IO , func>::operator<<(std::function<base_type &( base_type & ) > flush){
+http_writer_v1<IO , func>::base_type & http_writer_v1<IO , func>::operator<<(std::function<base_type &( base_type & ) > flush){
     return flush(*this);
 }
 

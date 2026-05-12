@@ -20,12 +20,13 @@ class basic_io_handle_interface{
 
         
         virtual fd_type get() = 0;
-        
+        virtual int get_lowest_level_fd() = 0;
         virtual fd_type open() = 0;
-        
         virtual bool is_closed() = 0;
-
         virtual basic_io_handle_interface & close() = 0;
+        virtual int get_flags() = 0;
+        virtual int set_flags(int ) = 0;
+        basic_io_handle_interface() = default;
 
 
 };

@@ -1,29 +1,27 @@
-#include "io_handles_fwd.h"
+#include "socket_io_handle.h"
 #include <cassert>
 #include <cerrno>
 #include <openssl/ssl.h>
 #include <unistd.h>
 
-template< auto network_type  ,
-          auto communication_type  ,
-          auto protocol_type >
-class socket_io_handle : public socket_io_handle_interface{
-    using socket_io_handle_interface::fd_type;
-    using socket_io_handle_interface::endpoint_reference_type;
-    using sockaddr_type = endpoint_reference_type;
 
+template< auto network_type ,
+    auto communication_type ,
+    auto protocol_type >
+class socket_io_handle<network_type , communication_type , protocol_type>::impl{
     public:
-        socket_io_handle() {
+        impl(){
             open();
-        };
+        }
+        impl(fd_type fd ){
+            fd_ = fd;
+        }
 
-        fd_type open() override{
-            fd_ = ::socket(network_type , communication_type , protocol_type);
-            assert(fd_ > 0);
+        fd_type open(){
+            assert(fd_ = socket_wrapper(network_type , communication_type , protocol_type , [](int rc){return rc;}) > 0);
             return fd_;
         }
-        
-        bool is_closed() override {
+        bool is_closed(){
             if(fd_ < 0)return true;
 
             char ch;
@@ -36,86 +34,92 @@ class socket_io_handle : public socket_io_handle_interface{
 
             return ret <= 0;
         }
-
-        socket_io_handle & close() override{
-            if(fd_  == -1)return *this;
-            ::close(fd_);
-            return *this;
-        }
-
-        fd_type get() override {
+        fd_type get(){
             return fd_;
         }
-
-
+        int get_lowest_level_fd(){
+            return fd_;
+        }
+        void close(){
+            assert(fd_ > 0);
+            ::close(fd_);
+            return ;
+        }
+        int get_flags(){
+            return flags_ ;
+        }
+        int set_flags(int f){
+            flags_ = f;
+            return f;
+        }
     private:
-        endpoint_reference_type path_;
         fd_type fd_;
-};
-
-
-
-template<auto network_type ,
-        auto communication_type ,
-        auto protocol_type >
-class ssl_socket_io_handle  : public ssl_socket_io_handle_interface{
-    
-    public:
-        typedef socket_io_handle_interface base_type;
-        using sockaddr_type = endpoint_reference_type;
-
-    private:
-
-        base_type * base_socket_;
-    
-        void createContext(){
-            ctx_ = SSL_CTX_new(TLS_client_method());
-            assert(ctx_ != nullptr);
-        }
-    public:
-        typedef SSL * fd_type;
-        /*
-         * First creates a base socket and then makes a SSL * out of it 
-         */
-        ssl_socket_io_handle() : base_socket_(new tcp_socket() ){
-            assert(base_socket_ != nullptr);
-            createContext();
-            ssl_fd_ = SSL_new(ctx_);
-            assert( ssl_fd_ != nullptr);
-            assert(SSL_set_fd(ssl_fd_ , base_socket_->get()) == 1);
-        }
-        ssl_socket_io_handle(base_type * tcp_socket) : base_socket_(tcp_socket){
-            assert(base_socket_ != nullptr);
-            createContext();
-            ssl_fd_ = SSL_new(ctx_);
-            assert( ssl_fd_ != nullptr);
-            assert(SSL_set_fd(ssl_fd_ , base_socket_->get()) == 1);
-        }
-
-
-        ssl_socket_io_handle(base_type::fd_type fd ) = delete;
-
-        fd_type get() override{
-            return ssl_fd_;
-        }
-
-        ssl_socket_io_handle_interface & close() override {
-            SSL_shutdown(ssl_fd_);
-            SSL_free(ssl_fd_);
-            base_socket_->close();
-            return *this ;
-        }
-        ~ssl_socket_io_handle(){
-            close();
-            if(ctx_)
-                free(ctx_);
-        }
-
-        base_type & getBaseTcpSocket(){
-            return *base_socket_;
-        }
-    private:
-        SSL_CTX * ctx_;
-        fd_type ssl_fd_;
+        int flags_;
 
 };
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type>::socket_io_handle() :
+impl_(std::make_shared<impl>()){ }
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type>::socket_io_handle(fd_type fd) :
+impl_(std::make_shared<impl>(fd)){ }
+
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type>::fd_type socket_io_handle<network_type , communication_type , protocol_type>::open(){
+    impl_->open();
+}
+
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+bool socket_io_handle<network_type , communication_type , protocol_type>::is_closed(){
+    return impl_->is_closed();
+}
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type > & socket_io_handle<network_type , communication_type , protocol_type>::close(){
+    impl_->close();
+    return *this;
+}
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type >::fd_type socket_io_handle<network_type , communication_type , protocol_type>::get(){
+    return impl_->get();
+}
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type >::fd_type socket_io_handle<network_type , communication_type , protocol_type>::get_lowest_level_fd(){
+    return impl_->get_lowest_level_fd();
+}
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type >::fd_type socket_io_handle<network_type , communication_type , protocol_type>::get_flags(){
+    return impl_->get_flags();
+}
+
+template< auto network_type  ,
+          auto communication_type  ,
+          auto protocol_type >
+socket_io_handle<network_type , communication_type , protocol_type >::fd_type socket_io_handle<network_type , communication_type , protocol_type>::set_flags(int f){
+    return impl_->set_flags(f);
+}
+
+

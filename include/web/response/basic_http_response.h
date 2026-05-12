@@ -1,5 +1,9 @@
 #ifndef __HTTP_RESPONSE_H__
 #define __HTTP_RESPONSE_H__
+#include "basic_http_headers_interface.h"
+#include "basic_http_response_line_interface.h"
+#include "basic_object_interface.h"
+#include "http_status_codes.h"
 #include "json_fwd.h"
 #include "basic_logger.h"
 
@@ -126,4 +130,39 @@ class basic_http_response {
 };
 
 
+// abstract class
+class basic_http_response_interface : public basic_parser_interface<buffer_v1>{
+
+    public:
+        basic_http_response_interface() = default;
+        // set methods
+        virtual basic_http_response_interface & set_status(http_status &) = 0 ;
+        virtual basic_http_response_interface & set_version(std::string version) = 0 ;
+        virtual basic_http_response_interface & set_header(std::string key , std::string value) = 0;
+        virtual basic_http_response_interface & set_body(basic_object_interface  &body) = 0 ;
+       
+        // injections
+        virtual basic_http_response_interface & set_headers(basic_http_headers_interface & headers) = 0;
+        virtual basic_http_response_interface & set_response_line(basic_http_response_line_interface & response_line) = 0;
+
+        // get methods 
+        virtual const http_status & status() = 0;
+        virtual std::string & version() = 0;
+        virtual const std::string & operator[](std::string key) = 0;
+        virtual std::shared_ptr<basic_http_headers_interface>  headers() = 0;
+        virtual std::shared_ptr<basic_object_interface>  body() = 0;
+        virtual std::shared_ptr<basic_http_response_line_interface>  response_line() = 0;
+        
+        // cope , move , clone ....
+        virtual std::shared_ptr<basic_http_response_interface> clone() = 0;
+        basic_http_response_interface(basic_http_response_interface & ) = delete;
+        basic_http_response_interface(basic_http_response_interface && ) = delete;
+        basic_http_response_interface operator=(basic_object_interface &) = delete;
+        basic_http_response_interface operator=(basic_object_interface &&) = delete;
+        virtual basic_http_response_interface & clear() = 0;
+
+        // serialize
+        virtual std::string serialize() = 0;
+        virtual std::string serialize(basic_formatter_interface &) = 0;
+};
 #endif

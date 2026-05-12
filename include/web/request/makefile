@@ -1,54 +1,57 @@
-include ../../formatter/makefile
-include ../../json/makefile
+ifndef __HTTP_REQUEST_MAKEFILE__
+__HTTP_REQUEST_MAKEFILE__ := 1
 
-ifndef HOME
-	HOME=$(shell find ~/ -name agent -type d | head -n 1 )
-endif
+HOME=$(shell find ~/ -name agent -type d | head -n 1 )
 
-PWD=${HOME}/include/web/request
+include ${HOME}/include/formatter/makefile
+include ${HOME}/include/json/makefile
+include ${HOME}/include/web/headers/makefile
 
-OBJS=${PWD}/build/http_headers_v1.o \
-	 ${PWD}/build/http_request_line_v1.o \
-	 ${PWD}/build/http_request_v1.o
+CFLAGS ?= -Wall -Wextra -MMD -MP
 
-ifndef INCLUDES
-INCLUDE_HEADERS := $(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ) 
-INCLUDES := $(addprefix -I,$(INCLUDE_HEADERS))
-endif
+WEB_REQ_OBJS=${HOME}/include/web/request/build/http_request_line_v1.o \
+	 ${HOME}/include/web/request/build/http_request_v1.o
 
-TEST_OBJ := ${PWD}/tests/mock.o
-TEST_FILE := ${PWD}/tests/mock.cc
+WEB_REQ_TEST_OBJ := ${HOME}/include/web/request/tests/mock.o
+WEB_REQ_TEST_FILE := ${HOME}/include/web/request/tests/mock.cc
+WEB_REQ_DEP := $(WEB_REQ_TEST_OBJ:.o=.d) $(WEB_REQ_OBJS:.o=.d)
+INCLUDES ?= $(addprefix -I,$(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ) )
 
-LIB_FILE := ${PWD}/libs/libhttp_request_v1.so
-BIN_DIR := ${PWD}/bin/
-
-ifndef LINKERS
-LINKERS := -L${HOME}/include/formatter/libs -lformatter \
-		-L${HOME}/include/json/libs -ljson_parser
-else
-LINKERS += -L${HOME}/include/formatter/libs -lformatter \
+WEB_REQ_LINKERS := -L${HOME}/include/formatter/libs -lformatter \
 		-L${HOME}/include/json/libs -ljson_parser \
-		-L${HOME}/include/web/request/libs -lhttp_request_v1
-endif
+		${HEADERS_LINKERS}
 
-.PHONY: request_all clean mock_request
+WEB_REQ_LIB_FILE := ${HOME}/include/web/request/libs/libhttp_request.so
+WEB_REQ_BIN_FILE := ${HOME}/include/web/request/bin/mock
 
-request_all: ${OBJS}
-	${CXX} -std=c++23 --shared -fPIC $^ -o ${LIB_FILE}
+.PHONY: request_all request_clean mock_request
 
-mock_request: json_all formatter_all request_all mock
-	echo "compiled successfully"
+request_all: json_all formatter_all headers_all request_app
+	echo "built and compiled ${WEB_REQ_LINKERS} successfully"
 
-mock: ${TEST_OBJ}
-	${CXX} -std=c++23 $^ ${INCLUDES} ${LINKERS} -o ${BIN_DIR}/$@
+request_app: ${WEB_REQ_OBJS}
+	${CXX} -std=c++23 --shared -fPIC $^ ${WEB_REQ_LINKERS} -o ${WEB_REQ_LIB_FILE}
+	$(eval LINKERS=$(LINKERS) -L${HOME}/include/web/request/libs/ -lhttp_request)
+	
+mock_request: ${TEST_OBJ}  request_all 
+	${CXX} -std=c++23 $< ${INCLUDES} ${LINKERS} -o ${WEB_REQ_BIN_FILE}
 
-${TEST_OBJ}: ${TEST_FILE}
-	${CXX} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
 
-${PWD}/build/%.o: ${PWD}/impl/%.cc
-	${CXX} -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+mock_http_request_line: ${TEST_OBJ} ${HOME}/include/web/request/build/http_request_line_v1.o
+	${CXX} -std=c++23 $^ ${INCLUDES} ${LINKERS} -o ${WEB_REQ_BIN_FILE}
 
-clean: 
+${WEB_REQ_TEST_OBJ}: ${WEB_REQ_TEST_FILE}
+	${CXX} $(CFLAGS) -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+
+${HOME}/include/web/request/build/%.o: ${HOME}/include/web/request/impl/%.cc
+	${CXX} $(CFLAGS) -std=c++23 -fPIC -c $< ${INCLUDES} -o $@
+
+-include $(WEB_REQ_DEPS)
+
+request_clean: 
 	if [ $$(ls ./build/ | wc -l ) -gt 0 ]; then rm -f ./build/* ; fi
 	if [ $$(ls ./libs/ | wc -l ) -gt 0 ]; then rm -f ./libs/* ; fi
 	if [ $$(ls ./bin/ | wc -l ) -gt 0 ]; then rm -f ./bin/* ; fi
+	if [ $$(ls ./tests/*.o | wc -l) -gt 0 ] ; then rm -f ./tests/*.o ; fi
+
+endif

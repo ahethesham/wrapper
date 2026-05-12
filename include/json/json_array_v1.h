@@ -8,7 +8,7 @@ class json_array_v1 : public basic_object_interface{
 
     public:
         // have ur own tokenizer when testing
-        json_array_v1(basic_json_tokenizer_interface & tokenizer) ;
+        json_array_v1(json_tokenizer & tokenizer) ;
         json_array_v1(json_array_v1 & obj);
         json_array_v1(json_array_v1 && obj);
         json_array_v1(const char * input);
@@ -20,14 +20,24 @@ class json_array_v1 : public basic_object_interface{
         // have your own formatter when testing 
         std::string serialize(basic_formatter_interface & formatter) override;
 
-        std::unique_ptr<basic_object_interface> clone()override;
-        void parse(basic_json_tokenizer_interface & tokenizer) override;
+        std::shared_ptr<basic_object_interface> clone()override;
+        void parse(json_tokenizer & tokenizer) override;
         json_array_v1 & push(basic_object_interface * obj);
     
         basic_object_interface & operator[](int idx);
         json_array_v1 & operator=(json_array_v1 & obj);
         json_array_v1 & operator=(json_array_v1 && obj);
 
+        std::string get_body_type() override;
+
+        //parse methods 
+        buffer_type * buffer() override;
+        void parse(buffer_type * buffer) override;
+        void at_eof(buffer_type * buffer) override;
+        bool continue_reading( )override;
+       
+        json_array_v1 & clear() override;
+	
     private:
         std::vector<basic_object_interface *> *storage_;
 };

@@ -5,13 +5,14 @@
 
 template<typename T>
 class basic_tokenizer_interface;
+
 class basic_object_interface;
 
 template<typename T >
 class basic_token_interface{
     public:
         using object_interface = T;
-        using tokenizer_interface = basic_tokenizer_interface<T>;
+        using tokenizer_interface = basic_tokenizer_interface<object_interface>;
 
         using token_handler = std::function< object_interface & (tokenizer_interface &) > ;
 

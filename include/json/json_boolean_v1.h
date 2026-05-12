@@ -7,7 +7,7 @@
 class json_boolean_v1 : public basic_object_interface{
 
     public:
-        json_boolean_v1(basic_json_tokenizer_interface & tokenizer) ;
+        json_boolean_v1(json_tokenizer & tokenizer) ;
 
         json_boolean_v1(json_boolean_v1 & obj);
         json_boolean_v1(json_boolean_v1 &&obj);
@@ -20,8 +20,18 @@ class json_boolean_v1 : public basic_object_interface{
         json_boolean_v1 & operator=(json_boolean_v1 &);
         json_boolean_v1 & operator=(json_boolean_v1 &&);
 
-        std::unique_ptr<basic_object_interface> clone() override;
-        void parse(basic_json_tokenizer_interface & tokenizer) override;
+        std::shared_ptr<basic_object_interface> clone() override;
+        void parse(json_tokenizer & tokenizer) override;
+
+        std::string get_body_type() override;
+
+        //parse methods 
+        buffer_type * buffer() override;
+        void parse(buffer_type * buffer) override;
+        void at_eof(buffer_type * buffer) override;
+        bool continue_reading( )override;
+
+        json_boolean_v1 & clear() override;
     private:
         bool value_;
 };

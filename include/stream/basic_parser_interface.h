@@ -11,7 +11,7 @@ class basic_parser_interface{
         virtual void parse(buffer_type * buffer) = 0;
 
         virtual buffer_type * buffer() = 0;
-
+        virtual ~basic_parser_interface() = default;
 };
 
 #endif

@@ -41,6 +41,7 @@ class basic_writer_interface{
          */
         virtual basic_writer_interface & flush() = 0;
 
+
         static inline self_type & endl(self_type & os){
             return os.flush();
         }

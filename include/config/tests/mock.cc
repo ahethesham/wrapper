@@ -1,12 +1,11 @@
 #include "ini_config_parser.h"
-#include "stream_fwd.h"
 #include "io_handles_fwd.h"
 #include "file_logger_v1.h"
 #include "file_reader_v1.h"
 #include <iostream>
 
 using Config = ini_config_parser<ini_container>;
-
+using file_reader = file_reader_v1;
 int main(int argc , char ** argv)
 {
     /*
