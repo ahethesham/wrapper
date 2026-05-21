@@ -1,0 +1,84 @@
+
+#include "http_reader_v1.h"
+#include "basic_parser_interface.h"
+#include <iostream>
+#include <stdexcept>
+
+template<typename IO ,
+         auto func>
+http_reader_v1<IO , func>::http_reader_v1(std::shared_ptr<IO> handle) : handle_(handle){}
+
+template<typename IO , auto func>
+http_reader_v1<IO, func>::size_type http_reader_v1<IO , func>::read(void * buffer , ssize_t size) {
+   int rc ;
+   int bufferIdx = 0;
+   size_type totalBytes = 0;
+   int remainingBytes = size;
+   while(remainingBytes > 0){
+        rc = func(handle_->get() ,(void *)( (char *)buffer + bufferIdx ), remainingBytes , [](int rc){return rc;});
+
+        std::cout << "how the hell can this log come earlier " << rc << std::endl;
+        fflush(stdout);
+        if(rc == 0){
+            break;
+        }else if(rc < 0){
+            if(errno == EINTR)continue;
+            throw std::runtime_error("read interrupted");
+        }
+        remainingBytes -= rc;
+        totalBytes += rc;
+        bufferIdx += rc;
+   }
+
+   return totalBytes;
+}
+
+template<typename IO , auto func>
+http_reader_v1<IO, func>::self_type & http_reader_v1<IO, func>::read(http_parser_interface & parser) {
+    std::cout << "In " << __func__ << std::endl;
+    buffer_v1 * buffer = new buffer_v1();
+    int rc ;
+    while(parser.continue_reading())
+    {
+        rc = this->read( (void  *)(buffer->data + buffer->tail ), 64 * 1024);
+        std::cout << "read " << rc << "bytes " << std::endl;
+        if(rc == 0){
+            parser.at_eof(buffer);
+            break;
+        }else if(rc < 0){
+            if(errno == EINTR)continue;
+            throw std::runtime_error("read interrupted");
+        }
+        buffer->tail += rc;
+        parser.parse(buffer);
+    }
+    return *this;
+}
+
+template<typename IO , auto func>
+http_reader_v1<IO , func>::size_type http_reader_v1<IO , func>::read(buffer_type * buffer) {
+    int rc ;
+    int totalBytes = 0;
+    while(1)
+    {
+        rc = this->read ( (void *)(buffer->data + buffer->tail) ,( ssize_t)64 * 1024);
+        if(rc == 0){
+            // client closed the socket 
+            break;
+        }else if(rc < 0){
+            if(errno == EINTR)continue;
+            throw std::runtime_error("read interrupted ");
+        }
+        totalBytes += rc;
+        buffer->tail += rc;
+    }
+    return totalBytes;
+}
+
+template<typename IO , auto func>
+http_reader_v1<IO , func>::self_type & http_reader_v1<IO , func>::operator>>(http_parser_interface & parser) {
+    return read(parser);
+}
+
+
+
