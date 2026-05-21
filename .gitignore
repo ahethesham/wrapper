@@ -2,7 +2,11 @@ env/
 .cache/
 .buildFileTree.sh
 .compile_commands.json
-logs/
+**/*.log
+**/*.o
+**/*.so
+**/*.d
+**/bin/
 .git
 samples/
 
