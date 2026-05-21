@@ -1,8 +1,0 @@
-2026:05:12 20:37:45|ahethesham-ThinkStation-P330-Tiny||139171770033984|INFO| done with building object calling serialize 
-2026:05:12 20:37:45|ahethesham-ThinkStation-P330-Tiny||139171770033984|INFO| 200 OK HTTP/1.1
-Testing builder: successfull
-
-{
-	"Testing http builder ": "good"
-}
-2026:05:12 20:37:45|ahethesham-ThinkStation-P330-Tiny||139171770033984|INFO| Exiting
