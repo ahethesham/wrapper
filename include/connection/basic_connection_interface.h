@@ -48,6 +48,7 @@ class basic_connection_interface{
         virtual basic_connection_interface & set_keep_alive_timeout(uint64_t r) = 0;
 
         virtual basic_connection_interface & connect() = 0;
+        virtual std::string hostname() = 0;
         virtual basic_connection_interface & set_exception_handler(exception_handler handler) = 0;
 
         basic_connection_interface() = default;

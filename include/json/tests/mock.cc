@@ -1,22 +1,13 @@
 #include <cassert>
 #include <vector>
 #include <iostream>
-#include "json_boolean_v1.h"
 #include "json_formatter_v1.h"
-#include "json_integer_v1.h"
-#include "json_null_v1.h"
-#include "json_string_v1.h"
 #include "file_logger_v1.h"
 #include "ini_config_parser.h"
 #include "json_builder.h"
+#include "json_fwd.h"
 
 Logger * gLogger;
-using json_object = json_object_v1;
-using json_string = json_string_v1;
-using json_integer = json_integer_v1;
-using json_boolean = json_boolean_v1;
-using json_null = json_null_v1;
-using json_array = json_array_v1;
 
 using file_reader = file_reader_v1;
 int main(int argc , char **argv)
@@ -70,7 +61,17 @@ int main(int argc , char **argv)
 
         json_object obj;
         obj.push("Testing this internally" , std::make_shared< json_array >("[ \"t1\" , \"t2\" ]"));
-        logger << obj.serialize() << endl;
+        logger << obj .serialize() << endl;
+
+        logger << "test 2 " << endl;
+        json_body body;
+        body.put("testing json body" , "string")
+            .put("testing json body integer" ,  7)
+            .put("testing json body boolean" , std::make_shared<json_boolean>(true));
+
+        logger << body.serialize(formatter) << endl;
+
+
 
     }catch(std::exception & e){
     }

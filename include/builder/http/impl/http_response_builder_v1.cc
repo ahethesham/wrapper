@@ -61,15 +61,19 @@ class http_response_builder_v1<T>::impl{
             return *response_->body();
         }
         std::shared_ptr<basic_http_response_interface>  build(){
+            LOG_DEBUG << "Entered " << __func__ << endl;
             auto resp_obj =  std::make_shared<T>() ;
             resp_obj->set_response_line(std::make_shared<http_response_line_v1>());
             resp_obj->set_body(std::make_shared<json_object>());
             resp_obj->set_headers(std::make_shared<http_headers_v1>());
+            LOG_DEBUG << "Exiting " << __func__ << endl;
             return resp_obj;
         }
         std::shared_ptr<basic_http_response_interface> build(std::shared_ptr<basic_reader_interface<socket_io_handle_interface>> reader){
+            LOG_DEBUG << "Entered " << __func__ << endl;
             auto response = build();
             reader->read(*response);
+            LOG_DEBUG << "Exiting " << __func__ << endl;
             return response;
         }
         std::shared_ptr<basic_http_response_interface> build(std::shared_ptr<basic_reader_interface<ssl_socket_io_handle_interface>> reader){

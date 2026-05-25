@@ -67,11 +67,12 @@ class http_request_builder_v1<T>::impl{
 
     private:
         void set_default_headers(){
-            instance_->set_header("Host" , std::string(hostname_));
+            //instance_->set_header("Host" , std::string(hostname_));
             instance_->set_header("Content-Type" , instance_->body()->get_body_type());
             instance_->set_header("Accept" , "*/*");
-            instance_->set_header("Content-Length" , std::to_string(instance_->body()->size()) );
+            instance_->set_header("Content-Length" ,  std::to_string(instance_->body()->size()));
             instance_->set_header("Connection" , "close");
+            instance_->set_header("User-Agent" , "Testing");
             return ;
         }
         char hostname_[256];

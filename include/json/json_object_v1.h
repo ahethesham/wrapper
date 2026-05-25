@@ -45,6 +45,8 @@ class json_object_v1 : public basic_object_interface  {
         std::shared_ptr<basic_object_interface> clone()  override;
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & body_type) override;
+
         json_object_v1 & clear() override;
 
         // should return the raw size of the body , ignore all the tabs , newlines and other formatters 

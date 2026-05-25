@@ -29,6 +29,7 @@ class json_null_v1 : public basic_object_interface{
 
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & body_type) override;
 
         //parse methods 
         buffer_type * buffer() override;

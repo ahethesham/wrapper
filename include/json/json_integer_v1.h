@@ -25,6 +25,7 @@ class json_integer_v1 : public basic_object_interface{
         std::shared_ptr<basic_object_interface> clone() override;
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & body_type) override;
 
         //parse methods 
         buffer_type * buffer() override;

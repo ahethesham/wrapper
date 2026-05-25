@@ -7,6 +7,7 @@ class json_string_v1 : public basic_object_interface{
         json_string_v1(json_tokenizer & tokenizer) ;
         json_string_v1(std::shared_ptr<basic_tokenizer_interface<basic_object_interface>> tokenizer);
         json_string_v1(const char * input);
+        json_string_v1(const std::string & input);
         json_string_v1(json_string_v1 &);
         json_string_v1(json_string_v1 &&);
        
@@ -23,6 +24,7 @@ class json_string_v1 : public basic_object_interface{
         std::shared_ptr<basic_object_interface> clone() override;
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & body_type) override;
 
         // parse methods
         bool continue_reading() override;

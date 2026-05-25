@@ -47,7 +47,6 @@ class http_response_line_v1::impl{
             return;
         }
         void clear(){
-            // reset to default versions
             status_ = ::status(200);
             version_ = std::string("HTTP/1.1");
             return ;
@@ -83,6 +82,9 @@ class http_response_line_v1::impl{
     private:
         bool extract_response_line(buffer_type * buffer){
             if(!buffer || strstr(buffer->data + buffer->head , "\r\n") == nullptr)return true;
+
+            version_.clear();
+            
             while(*(buffer->data + buffer->head) != ' ')
                 version_ += *(buffer->data + buffer->head++);
 
@@ -95,7 +97,7 @@ class http_response_line_v1::impl{
             status_ =  ::status(num);
             std::cout << status_.code << std::endl;
             while(*(buffer->data + buffer->head++) != '\r');
-            assert(*(buffer->data + buffer->head++) == '\r' && *(buffer->data + buffer->head++ ) == '\n');
+            assert(*(buffer->data + buffer->head++ ) == '\n');
             cb_ = [this](buffer_type * buffer){
                 return false;
             };
@@ -114,9 +116,8 @@ http_response_line_v1::http_response_line_v1()
     : impl_(std::make_shared< impl>(::status(200))) {
 }
 
-http_response_line_v1::http_response_line_v1( http_response_line_v1 &obj)
-    : impl_(obj.impl_) {
-}
+http_response_line_v1::http_response_line_v1( http_response_line_v1 &obj) 
+    : impl_(std::make_shared<impl>((http_status &)obj.status())) { }
 
 http_response_line_v1::http_response_line_v1(http_response_line_v1 &&obj)
     : impl_(obj.impl_) {
@@ -209,11 +210,14 @@ http_status & status(int status){
     static http_status arr[] = {
         { 200 , "OK"} ,
         { 400 , "BAD_REQUEST"} ,
+        { 403 , "Forbidden"} ,
         { 500 , "INTERNAL_SERVER_ERROR"},
-        { 503 , "SERVICE_UNAVAILABLE"}
+        { 503 , "SERVICE_UNAVAILABLE"} ,
+        { 504 , "Connection_timed_out"}
     };
     
     return find_bs(arr , 0 , 3 , status);
 }
+
 
 

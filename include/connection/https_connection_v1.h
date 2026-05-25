@@ -42,7 +42,7 @@ class https_connection_v1 : public basic_connection_interface{
        https_connection_v1 & set_keep_alive_timeout(uint64_t r) override;
        
        https_connection_v1 & connect() override ;      
-
+        std::string hostname() override;
        // set handlers
        https_connection_v1 & set_exception_handler(exception_handler handler) override;
     private:
@@ -50,5 +50,4 @@ class https_connection_v1 : public basic_connection_interface{
        std::shared_ptr<impl> impl_;
 };
 
-using https_connection = https_connection_v1; 
 #endif

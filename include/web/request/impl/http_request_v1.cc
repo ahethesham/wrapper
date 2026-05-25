@@ -11,6 +11,19 @@
 class http_request_v1::impl{
     using callback = std::function<bool(buffer_type * buffer )>;
     public:
+
+        impl() : headers_(std::make_shared<http_headers_v1>()) , request_line_(std::make_shared<http_request_line_v1>()) , body_(std::make_shared<json_object_v1>()) , buffer_(*new http_request_v1::buffer_type()){
+            cb_ = [this](buffer_type * buffer){
+                return parse_request_line(buffer);
+            };
+        }
+
+
+        impl(basic_http_request_line_interface & req_line , basic_http_headers_interface & headers , basic_object_interface & body) : headers_(headers.clone()) , request_line_(req_line.clone()) , body_(body.clone()) , buffer_(* new http_request_v1::buffer_type()){
+            cb_ = [this](buffer_type * buffer){
+                return parse_request_line(buffer);
+            };
+        }
         impl &set_headers(basic_http_headers_interface & headers){
             headers_ = headers.clone();
             return *this;
@@ -109,19 +122,6 @@ class http_request_v1::impl{
             res += headers_->serialize();
             res += body_->serialize();
             return res;
-        }
-
-        impl() : headers_(std::make_shared<http_headers_v1>()) , request_line_(std::make_shared<http_request_line_v1>()) , body_(std::make_shared<json_object_v1>()) , buffer_(*new http_request_v1::buffer_type()){
-            cb_ = [this](buffer_type * buffer){
-                return parse_request_line(buffer);
-            };
-        }
-
-
-        impl(basic_http_request_line_interface & req_line , basic_http_headers_interface & headers , basic_object_interface & body) : headers_(headers.clone()) , request_line_(req_line.clone()) , body_(body.clone()) , buffer_(* new http_request_v1::buffer_type()){
-            cb_ = [this](buffer_type * buffer){
-                return parse_request_line(buffer);
-            };
         }
 
     private:
@@ -291,6 +291,9 @@ http_request_v1::buffer_type * http_request_v1::buffer(){
 }
 std::string http_request_v1::serialize(basic_formatter_interface & formatter){
     return impl_->serialize(formatter);
+}
+std::string http_request_v1::serialize(){
+    return impl_->serialize();
 }
 
 

@@ -25,6 +25,7 @@ class json_boolean_v1 : public basic_object_interface{
         void parse(std::shared_ptr<basic_tokenizer_interface<basic_object_interface>> tokenizer) override;
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & type) override;
 
         //parse methods 
         buffer_type * buffer() override;

@@ -1,6 +1,7 @@
 
 #include "http_reader_v1.h"
 #include "basic_parser_interface.h"
+#include "file_logger_v1.h"
 #include <iostream>
 #include <stdexcept>
 
@@ -17,12 +18,11 @@ http_reader_v1<IO, func>::size_type http_reader_v1<IO , func>::read(void * buffe
    while(remainingBytes > 0){
         rc = func(handle_->get() ,(void *)( (char *)buffer + bufferIdx ), remainingBytes , [](int rc){return rc;});
 
-        std::cout << "how the hell can this log come earlier " << rc << std::endl;
-        fflush(stdout);
         if(rc == 0){
             break;
         }else if(rc < 0){
             if(errno == EINTR)continue;
+            LOG_FATAL << "Read Interrupted " << strerror(errno) << endl;
             throw std::runtime_error("read interrupted");
         }
         remainingBytes -= rc;
@@ -35,13 +35,12 @@ http_reader_v1<IO, func>::size_type http_reader_v1<IO , func>::read(void * buffe
 
 template<typename IO , auto func>
 http_reader_v1<IO, func>::self_type & http_reader_v1<IO, func>::read(http_parser_interface & parser) {
-    std::cout << "In " << __func__ << std::endl;
     buffer_v1 * buffer = new buffer_v1();
     int rc ;
     while(parser.continue_reading())
     {
         rc = this->read( (void  *)(buffer->data + buffer->tail ), 64 * 1024);
-        std::cout << "read " << rc << "bytes " << std::endl;
+        LOG_INFO << "read " << rc << "from client " << endl;
         if(rc == 0){
             parser.at_eof(buffer);
             break;
@@ -50,6 +49,7 @@ http_reader_v1<IO, func>::self_type & http_reader_v1<IO, func>::read(http_parser
             throw std::runtime_error("read interrupted");
         }
         buffer->tail += rc;
+        LOG_INFO << "raw \n " << buffer->data << "from client " << endl;
         parser.parse(buffer);
     }
     return *this;

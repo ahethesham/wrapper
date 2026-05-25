@@ -11,6 +11,7 @@ class basic_http_headers_interface : public basic_parser_interface<buffer_v1>{
     public:
         const virtual std::string & get(std::string key) = 0;
         virtual basic_http_headers_interface & set(std::string key , std::string value) = 0;
+        virtual bool has(const std::string & key) = 0;
         virtual basic_http_headers_interface & clear() = 0;
         virtual std::string serialize() = 0;
         virtual std::string serialize(basic_formatter_interface & formatter) = 0;

@@ -1,6 +1,7 @@
 #include "http_response_v1.h"
 #include "http_response_line_v1.h"
 #include "json_formatter_v1.h"
+#include <iostream>
 
 class http_response_v1::impl{
     using callback = std::function<bool(buffer_type * buffer)>;
@@ -74,23 +75,25 @@ class http_response_v1::impl{
 
         //parse methods
         void parse(buffer_type * buffer){
+            is_eof_ = false;
             cb_(buffer);
             return ;
         }
         bool continue_reading(){
+            is_eof_ = false;
             return cb_(nullptr);
         }
         buffer_type * buffer(){
             memset(buffer_->data , 0 , buffer_->tail);
             buffer_->head = buffer_->tail = 0;
-            json_formatter_v1 formatter;
-            std::string  ser = serialize(formatter);
+            std::string  ser = serialize();
             memcpy(buffer_->data , ser.c_str() , ser.size());
             buffer_->data[ser.size()] = '\0';
             buffer_->tail = ser.size();
             return buffer_.get();
         }
         void at_eof(buffer_type * buffer){
+            is_eof_ = true;
             cb_(buffer);
             return ;
         }
@@ -105,13 +108,9 @@ class http_response_v1::impl{
         }
         std::string serialize(basic_formatter_interface & formatter){
             std::string res = "";
-            LOG_DEBUG << "triggered serialiaze in " << __func__ << endl;
             res += response_line_->serialize(formatter);
-            LOG_DEBUG << "response line serialized " << endl;
             res += headers_->serialize(formatter);
-            LOG_DEBUG << "headers serialized " << endl;
             res += body_->serialize(formatter);
-            LOG_DEBUG << "body serialized " << endl;
             return res;
         }
         void clear(){
@@ -123,6 +122,9 @@ class http_response_v1::impl{
 
     private:
         bool extract_response_line(buffer_type * buffer){
+            if(buffer == nullptr )return true;
+
+            LOG_DEBUG << "raw request \n" << buffer->data << endl;
             LOG_DEBUG << "extracting response line " << endl ;
             response_line_->parse(buffer);
             if(!response_line_->continue_reading()){
@@ -150,13 +152,29 @@ class http_response_v1::impl{
         }
         bool extract_body(buffer_type * buffer){
             LOG_DEBUG << "extracting body " << endl ;
-            if(response_line_->version() == "HTTP/1.1")
-            {
+            /*
+             *  if there is a content-lenght header we will read exactly those number
+             *  of bytes
+             */
+            if(headers_->has("Content-Length")) {
                 int size =  std::atoi(headers_->get("Content-Length").c_str());
                 if(buffer->tail - buffer->head < size){
                     LOG_WARN << "full request body not yet received " << size << endl;
                     return true;
                 }
+               // if(buffer->tail - buffer->head > size)
+                 //   throw std::runtime_error("how can Content-Length be smaller than the read bytes");
+            }else if(response_line_->version() == "HTTP/1.0"){
+                if(!is_eof_)return true;
+            }else{
+                throw std::runtime_error("mandatory content-length header not found");
+            }
+            if(!headers_->has("Content-Type") || !body_->verify_body_type(headers_->get("Content-Type")))
+            {
+                LOG_FATAL << "Unknown content type received printing raw body" << headers_->get("Content-Type") << endl;
+                buffer->data[buffer->tail]  = '\0';
+                LOG_DEBUG << (buffer->data + buffer->head) << endl;
+                throw std::runtime_error("unknown content type");
             }
             body_->parse(buffer);
             if(!body_->continue_reading()){
@@ -173,6 +191,7 @@ class http_response_v1::impl{
         std::shared_ptr<basic_http_response_line_interface> response_line_;
         std::shared_ptr<basic_object_interface> body_;
         std::shared_ptr<buffer_type > buffer_;
+        bool is_eof_;
         callback cb_;
 };
 
@@ -286,6 +305,7 @@ std::string http_response_v1::serialize(){
     return impl_->serialize();
 }
 std::string http_response_v1::serialize(basic_formatter_interface & formatter){
+    std::cout << "checkpoint 1 " << std::endl;
     LOG_DEBUG << "triggered read in " << __func__ << endl;
     return impl_->serialize(formatter);
     LOG_DEBUG << " done " << __func__ << endl;

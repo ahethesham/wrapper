@@ -13,6 +13,7 @@ class http_headers_v1 : public basic_http_headers_interface {
         const std::string & operator[](std::string key) override;
         const std::string & get(std::string key) override;
         self_type & set(std::string key , std::string value) override;
+        bool has(const std::string & str) override; 
         self_type & clear() override;
 
 

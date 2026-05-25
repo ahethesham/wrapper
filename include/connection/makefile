@@ -10,13 +10,16 @@ include $(AGENT_HOME)/include/builder/http/makefile
 include $(AGENT_HOME)/include/socket/makefile
 
 CFLAGS ?= -Wall -Wextra -MMD -MP
-
+CONNECTION_HOME := $(AGENT_HOME)/include/connection/
 #for mock testing 
 CONNECTION_TEST_MAIN := $(AGENT_HOME)/include/connection/tests/mock.cc
 CONNECTION_TEST_OBJ := $(CONNECTION_TEST_MAIN:.cc=.o)
 CONNECTION_BIN := $(AGENT_HOME)/include/connection/bin/mock
 # for building shared libraries for users 
-CONNECTION_OBJS := $(AGENT_HOME)/include/connection/build/https_connection_v1.o
+CONNECTION_OBJS := $(CONNECTION_HOME)/build/https_connection_v1.o \
+				   $(CONNECTION_HOME)/build/connection_pool_v1.o \
+				   $(CONNECTION_HOME)/build/connection_handle_v1.o
+
 
 CONNECTION_DEP := $(CONNECTION_OBJS:.o=.d) $(CONNECTION_TEST_OBJ:.o=.d)
 INCLUDES ?= $(addprefix -I,$(sort $(dir $(shell find ${HOME} -type f -name "*.h") ) ))
@@ -31,7 +34,7 @@ connection_app: $(CONNECTION_OBJS)
 	$(CXX) -std=c++23 --shared -fPIC $(CFLAGS) $^ $(LINKERS) -o $(CONNECTION_LIB)
 	$(eval LINKERS=$(LINKERS) -L$(AGENT_HOME)/include/connection/libs -lconnection)
 
-$(AGENT_HOME)/include/connection/build/%.o: $(AGENT_HOME)/include/connection/impl/%.cc
+$(CONNECTION_HOME)/build/%.o: $(CONNECTION_HOME)/impl/%.cc
 	$(CXX) -std=c++23 $(CFLAGS) -fPIC $< -c $(INCLUDES) $(LINKERS) -o $@
 
 connection_mock: $(CONNECTION_TEST_OBJ) connection_all

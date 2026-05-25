@@ -62,6 +62,10 @@ class basic_object_interface : public basic_parser_interface<buffer_v1>{
           virtual std::shared_ptr<basic_object_interface> clone() = 0;
 
           virtual std::string get_body_type() = 0;
+          /*
+           * should be responsible for telling whether the body type matches or not
+           */
+          virtual bool verify_body_type(const std::string & body_type) = 0;
 
           virtual basic_object_interface & clear() = 0;
           virtual int size() = 0;

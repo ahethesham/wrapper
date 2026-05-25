@@ -4,9 +4,9 @@
 #include "json_builder.h"
 
 json_integer_v1::json_integer_v1(json_tokenizer & tokenizer) : value_(0){
-    parse(tokenizer);
+    throw std::runtime_error("depreciated constructor for json integer ");
 }
-json_integer_v1::json_integer_v1(std::shared_ptr<basic_tokenizer_interface<basic_object_interface>> tokenizer){
+json_integer_v1::json_integer_v1(std::shared_ptr<basic_tokenizer_interface<basic_object_interface>> tokenizer) : value_(0){
     parse(tokenizer);
 }
 json_integer_v1::json_integer_v1(json_integer_v1 & obj) : value_(obj.value_){}
@@ -49,10 +49,11 @@ void json_integer_v1::parse(std::shared_ptr<basic_tokenizer_interface<basic_obje
      char ch = tokenizer->getNext()->get();
      bool isNegetive = false;
      assert((ch >= '0' && ch <= '9') || ch == '-');
-     value_ = 0;
      if(ch == '-'){
          isNegetive = true;
          tokenizer->get_next_char();
+     }else{
+         value_ = ch - '0';
      }
      do{
          ch = tokenizer->peek_next_char();
@@ -60,6 +61,7 @@ void json_integer_v1::parse(std::shared_ptr<basic_tokenizer_interface<basic_obje
          ch = tokenizer->get_next_char();
          value_ = value_ * 10  + (ch - '0');
      }while(1);
+
      return ;
 }
 
@@ -108,4 +110,8 @@ json_integer_v1 & json_integer_v1::clear(){
 
 int json_integer_v1::size(){
     return (std::to_string(value_).size());
+}
+
+bool json_integer_v1::verify_body_type(const std::string & type){
+    return get_body_type() == type;
 }

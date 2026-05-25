@@ -43,8 +43,12 @@ std::map<std::string , std::shared_ptr<basic_object_interface>> & json_object_v1
 
 std::string json_object_v1::serialize(){
     std::string res = "{";
+    bool data_exists = false;
     for(auto itr : *storage_){
         //res += "\r\n\t";
+        if(data_exists)
+            res += ',';
+        data_exists = true;
         res += '\"' + itr.first + '\"' + ':' + ' ';
         res += itr.second->serialize();
     }
@@ -217,3 +221,8 @@ int json_object_v1::size(){
     total += 2; // for {}
     return total;
 }
+
+bool json_object_v1::verify_body_type(const std::string & str){
+    return strstr(str.c_str() , get_body_type().c_str()) != nullptr ;
+}
+

@@ -33,6 +33,7 @@ class json_array_v1 : public basic_object_interface{
         json_array_v1 & operator=(json_array_v1 && obj);
 
         std::string get_body_type() override;
+        bool verify_body_type(const std::string & body_type) override;
 
         //parse methods 
         buffer_type * buffer() override;

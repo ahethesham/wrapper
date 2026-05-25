@@ -12,6 +12,7 @@ class v4_tcp_endpoint_v1 : public basic_endpoint_interface{
         // user will only be giving the hostname we need to resolve it to
         // the particular ip address
         v4_tcp_endpoint_v1(const char * host , int port );
+        v4_tcp_endpoint_v1(const std::string & host , int port );
 
         bool resolve() override;
         struct addrinfo * get_info() override;

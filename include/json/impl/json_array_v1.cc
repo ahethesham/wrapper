@@ -180,4 +180,6 @@ int json_array_v1::size(){
     return total;
 }
 
-
+bool json_array_v1::verify_body_type(const std::string & body){
+    return get_body_type() == body ;
+}

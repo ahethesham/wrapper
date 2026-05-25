@@ -20,6 +20,7 @@ json_string_v1::json_string_v1(json_string_v1 && obj) : value_(nullptr){
     obj.value_ = nullptr;
 }
 json_string_v1::json_string_v1(const char * input) : value_(new std::string(input)){}
+json_string_v1::json_string_v1(const std::string & input) : value_(new std::string(input)){}
 
 std::string & json_string_v1::value()  {
     return *value_;
@@ -116,5 +117,10 @@ json_string_v1 & json_string_v1::clear(){
 }
 
 int json_string_v1::size(){
-    return value_->size();
+    return value_->size() + 2;
+}
+
+bool json_string_v1::verify_body_type(const std::string & str){
+    return get_body_type() == str ;
+
 }

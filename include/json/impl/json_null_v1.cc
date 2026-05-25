@@ -112,3 +112,7 @@ json_null_v1 & json_null_v1::clear(){
 int json_null_v1::size(){
     return value_->size();
 }
+
+bool json_null_v1::verify_body_type(const std::string & str){
+    return get_body_type() == str;
+}

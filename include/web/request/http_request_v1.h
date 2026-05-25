@@ -54,6 +54,7 @@ class http_request_v1 : public basic_http_request_interface  {
 
         // serialize to a string
         std::string serialize(basic_formatter_interface & formatter ) override;
+        std::string serialize() override;
 
     private:
         class impl;

@@ -118,3 +118,6 @@ int json_boolean_v1::size(){
     return value_ ? sizeof(char) * 4 : sizeof(char) * 5;
 }
 
+bool json_boolean_v1::verify_body_type(const std::string & str){
+    return get_body_type() == str;
+}

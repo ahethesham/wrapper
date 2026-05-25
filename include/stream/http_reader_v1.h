@@ -8,7 +8,9 @@
 #include <iostream>
 #include <memory>
 #include <sys/socket.h>
+#include "file_logger_v1.h"
 #include "openssl/ssl.h"
+#include "openssl/err.h"
 #include "socket_io_handle.h"
 
 using http_parser_interface    = basic_parser_interface<buffer_v1>;
@@ -24,10 +26,32 @@ inline int std_reader(int fd , void * buffer , ssize_t size , reader_callback cb
     return cb(rc);
 }
 inline int std_tls_reader(SSL * fd , void * buffer , ssize_t size , reader_callback cb){
-    std::cout << "triggering ssl read " << std::endl;
-    int rc = ::SSL_read(fd , buffer , size);
-    std::cout << "done ssl read " << rc << std::endl;
-    fflush(stdout);
+    int rc;
+    do{
+        rc = ::SSL_read(fd , buffer , size);
+        if(rc < 0){
+            int err = SSL_get_error( fd , rc);
+            if(err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE){
+                std::cout << "connection interrupted retrying " << std::endl;
+                continue;
+            }else if(err == SSL_ERROR_ZERO_RETURN ){
+                // clean close 
+                rc = 0;
+                break;
+            }else{
+                // fatal error
+                while ((err = ERR_get_error()) != 0) {
+                    char buf[256];
+                    ERR_error_string_n(err, buf, sizeof(buf));
+                    printf("OpenSSL error: %s\n", buf);
+                    fflush(stdout);
+                }
+                rc  = 0;
+                break;
+            }
+        }
+        break;
+    }while(1);
     return cb(rc);
 }
 }

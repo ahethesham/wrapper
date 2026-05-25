@@ -12,6 +12,11 @@ class v4_tcp_endpoint_v1::impl{
                 if(host)
                     strcpy((char *)host_ , host);
         }
+        impl(const std::string & host , int port )
+            :port_(port) , ai_flags_(0) {
+                memset(host_ , 0x00 , sizeof(host_));
+                strcpy(host_ , host.c_str());
+        }
         bool resolve(){
             struct addrinfo hint;
             ::memset(&hint , 0x00 , sizeof(hint));
@@ -51,7 +56,7 @@ class v4_tcp_endpoint_v1::impl{
             return ip_address_;
         }
         std::string hostname(){
-            return "";
+            return std::string(host_);
         }
     private:
         struct addrinfo * result_;
@@ -90,6 +95,10 @@ struct addrinfo * v4_tcp_endpoint_v1::iterator::get_next(){
 }
 
 v4_tcp_endpoint_v1::v4_tcp_endpoint_v1(const char * host , int port)
+    : impl_(std::make_shared<impl>(host , port)){
+        resolve();
+}
+v4_tcp_endpoint_v1::v4_tcp_endpoint_v1(const std::string & host , int port)
     : impl_(std::make_shared<impl>(host , port)){
         resolve();
 }

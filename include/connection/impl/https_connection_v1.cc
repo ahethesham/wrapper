@@ -33,12 +33,9 @@ class https_connection_v1::impl{
 
         basic_http_response_interface & send(basic_http_request_interface & req){
             assert(writer_ != nullptr && reader_ != nullptr );
-            LOG_DEBUG << "sending request \n" << req.buffer()->data << endl;
             *writer_ << req;
-            LOG_DEBUG << "write completed  " << endl;
             if(response_builder_ != nullptr){
                 auto res = response_builder_->build(reader_);
-                LOG_DEBUG << "got response " << res->serialize() <<  endl;
                 return *res;
             }
             auto res = response_->clone();
@@ -135,6 +132,9 @@ class https_connection_v1::impl{
                     throw host_not_found_exception("Host %s Not Found" , endpoint_->hostname().c_str());
             }
             return ;
+        }
+        std::string hostname(){
+            return endpoint_->hostname();
         }
     private:
         std::shared_ptr<basic_http_response_interface> response_;
@@ -248,4 +248,8 @@ https_connection_v1 & https_connection_v1::set_response_builder(std::shared_ptr<
 https_connection_v1 & https_connection_v1::set_request_builder(std::shared_ptr<basic_request_builder_interface<basic_http_request_interface> > builder){
     impl_->set_request_builder(builder);
     return *this;
+}
+
+std::string https_connection_v1::hostname(){
+    return impl_->hostname();
 }

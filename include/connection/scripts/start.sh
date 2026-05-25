@@ -13,5 +13,6 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${LIBS}"
 
 BINARY=${AGENT_HOME}/include/connection/bin/mock
 
-${BINARY}
+CFG="/home/ahethesham/agent/config/agent_dev.cfg"
+${BINARY} ${CFG}
 

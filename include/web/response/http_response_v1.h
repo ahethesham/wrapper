@@ -47,6 +47,10 @@ class http_response_v1 : public basic_http_response_interface{
         //serialize , deserialize methods
         std::string serialize() override;
         std::string serialize(basic_formatter_interface & formatter) override;
+
+        operator basic_http_response_interface&(){
+            return *this;
+        }
         
         // reset and clean
         http_response_v1 & clear() override;

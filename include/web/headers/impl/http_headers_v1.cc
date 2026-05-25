@@ -19,6 +19,9 @@ class http_headers_v1::impl{
 
             return itr->second;
         }
+        bool has(const std::string & str){
+            return storage_->find(str) != storage_->end();
+        }
         void set(const std::string & key ,const std::string & value){
             (*storage_)[key] = value;
             return ;
@@ -59,12 +62,11 @@ class http_headers_v1::impl{
             std::string res = "";
             bool temp = false;
             for(auto itr : *storage_){
-                if(temp)
-                    res += "\r\n";
                 temp = true;
                 res += itr.first;
                 res += ": ";
                 res += itr.second;
+                res += "\r\n";
             }
             // headers are supposed to take care of appending end of headers
             res += "\r\n";
@@ -83,6 +85,8 @@ class http_headers_v1::impl{
                 char * ptr = strstr((buffer->data + buffer->head) , "\r\n");
                 // end of headers can be recognized by "\r\n\r\n"
                 if(ptr == (buffer->data + buffer->head)){
+                    // end of headers
+                    buffer->head += 2;
                     cb_ = [this](buffer_v1 * buffer){
                         return false;
                     };
@@ -179,4 +183,8 @@ http_headers_v1::self_type & http_headers_v1::clear(){
 
 std::shared_ptr<basic_http_headers_interface> http_headers_v1::clone(){
     return std::make_shared<http_headers_v1>(*this);
+}
+
+bool http_headers_v1::has(const std::string & key){
+    return impl_->has(key);
 }

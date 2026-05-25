@@ -37,6 +37,7 @@ class basic_http_request_interface : public basic_parser_interface<buffer_v1>{
         
 
         virtual std::string serialize(basic_formatter_interface & formatter) = 0;
+        virtual std::string serialize() = 0;
         /*
          * have clone , copy , move constructors and assignment operattors
          */

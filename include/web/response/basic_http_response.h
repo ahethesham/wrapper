@@ -6,7 +6,7 @@
 #include "http_status_codes.h"
 #include "json_fwd.h"
 #include "basic_logger.h"
-
+#if 0
 template < typename status_line_policy ,
            typename header_policy ,
            typename body_policy ,
@@ -128,7 +128,7 @@ class basic_http_response {
         body_policy * body_;
 
 };
-
+#endif
 
 // abstract class
 class basic_http_response_interface : public basic_parser_interface<buffer_v1>{
@@ -148,6 +148,7 @@ class basic_http_response_interface : public basic_parser_interface<buffer_v1>{
         // get methods 
         virtual const http_status & status() = 0;
         virtual std::string & version() = 0;
+        // only for headers
         virtual const std::string & operator[](std::string key) = 0;
         virtual std::shared_ptr<basic_http_headers_interface>  headers() = 0;
         virtual std::shared_ptr<basic_object_interface>  body() = 0;
